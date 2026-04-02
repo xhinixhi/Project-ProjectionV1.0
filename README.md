@@ -2,6 +2,15 @@
 
 A professional, real-time church lyrics and multimedia presentation system built with **Flask**, **SQLAlchemy**, and **Socket.io**. Designed for low-latency OBS integration via Browser Source.
 
+## Support This Project
+
+If this system helps your church or production team, you can support development:
+
+• PayPal: https://www.paypal.me/red1103
+
+Your support helps maintain and improve this free and open-source project.
+
+
 ## ✨ Features
 
 -   **🎵 Song Library**: Advanced search by title, author, or lyrics. Easy "Add Song" workflow with custom section tags

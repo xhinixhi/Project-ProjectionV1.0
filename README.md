@@ -22,7 +22,7 @@ A professional, real-time church lyrics and multimedia presentation system built
 
 -   **📋 Service Lineup**: Build and reorder your service lineup with drag-and-drop.
 -   **📺 Real-time Projection**: Push lyrics to OBS or any screen instantly using Socket.io—no refresh required.
-      output = "http://localhost:5002/output"
+      output = 'http://localhost:5002/output'
     
 -   **🪄 Dynamic Styling**: Customize font, size, shadows, and **real-time text borders** for both normal and emphasized text.
 -   **📖 Bible Module**: Search and project Bible verses with support for parallel translations.
@@ -31,7 +31,7 @@ A professional, real-time church lyrics and multimedia presentation system built
     
 -   **🎞️ Media Library**: Manage and project background videos, images, and even web URLs.
        for youtube video use embed
-        example: https://www.youtube.com/embed/"videocode"?autoplay=1&mute=0&loop=1&playlist="videocode"&controls=0
+        example: 'https://www.youtube.com/embed/"videocode"?autoplay=1&mute=0&loop=1&playlist="videocode"&controls=0'
         replace "videocode" with youtube url identifier
     
 -   **🖥️ OBS Optimized**: Native transparent output mode designed for OBS Browser Sources.

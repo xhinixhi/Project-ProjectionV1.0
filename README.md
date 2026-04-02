@@ -26,7 +26,7 @@ A professional, real-time church lyrics and multimedia presentation system built
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/yourusername/song-lyrics-projection.git
+    git clone https://github.com/xhinixhi/song-lyrics-projection.git
     cd song-lyrics-projection
     ```
 

@@ -7,16 +7,16 @@ A professional, real-time church lyrics and multimedia presentation system built
 ## ✨ Features
 
 -   **🎵 Song Library**: Advanced search by title, author, or lyrics. Easy "Add Song" workflow with custom section tags
-       [I1.1] = Intro (.1 .2 .3 .4 are sections)
-       [V1.1] = Verse 1
-       [V2.1] = Verse 2
-       [C1.1] = Chorus 1
-       [PC1.1] = Pre Chorus
-       [B1.1] = Bridge
-       [R1.1] = Refrain
-       [T1.1] = Tag
-    you can map keyboard shortcut for each tag for fast song lyrics navigation (under setting > shortcuts)
-    example V1.1 mapped to letter "V"
+      - [I1.1] = Intro (.1 .2 .3 .4 are sections)
+      - [V1.1] = Verse 1
+      - [V2.1] = Verse 2
+      - [C1.1] = Chorus 1
+      - [PC1.1] = Pre Chorus
+      - [B1.1] = Bridge
+      - [R1.1] = Refrain
+      - [T1.1] = Tag
+   - you can map keyboard shortcut for each tag for fast song lyrics navigation (under setting > shortcuts)
+   - example V1.1 mapped to letter "V"
 
     support HTML tags (just enclose with ## <html> ##)
 

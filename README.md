@@ -1,6 +1,6 @@
 # SongLyrics Projection System
 
-A professional, real-time church lyrics and multimedia presentation system built with **Flask**, **SQLAlchemy**, and **Socket.io**. Designed for low-latency OBS integration via Browser Source.
+A professional, real-time church lyrics and multimedia presentation system built with Flask, SQLAlchemy, and Socket.IO. Runs as a standalone web application while offering seamless, low-latency integration with OBS via Browser Source.
 
 ## You can try the app here
 

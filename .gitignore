@@ -123,14 +123,25 @@ env.bak/
 venv.bak/
 
 # Project Specific
+*.db
+*.sqlite
+*.sqlite3
 app.db
-app/static/uploads/*
-!app/static/uploads/.gitkeep
 .DS_Store
 .docker
 docker-compose.override.yml
 
+# Media and Licensed Content
+app/bibles/
+app/static/media/*
+!app/static/media/.gitkeep
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+app/static/Video/*
+!app/static/Video/.gitkeep
+
 # Nested repositories or scratch files
 SongLyrics-Projection/
 Project.txt
+
 

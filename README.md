@@ -2,8 +2,6 @@
 
 A professional, real-time church lyrics and multimedia presentation system built with **Flask**, **SQLAlchemy**, and **Socket.io**. Designed for low-latency OBS integration via Browser Source.
 
-![Demo Placeholder](https://via.placeholder.com/1200x600.png?text=SongLyrics+Projection+System+Interface)
-
 ## ✨ Features
 
 -   **🎵 Song Library**: Advanced search by title, author, or lyrics. Easy "Add Song" workflow with custom section tags

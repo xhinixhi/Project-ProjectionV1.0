@@ -33,7 +33,7 @@ A professional, real-time church lyrics and multimedia presentation system built
       - for youtube video use embed  example:
       - 'https://www.youtube.com/embed/"videocode"autoplay=1&mute=0&loop=1&playlist="videocode"&controls=0'
       - replace "videocode" with youtube url identifier
-      - you can add live video feef as media through vdo.ninja then add the url (put all live feed under "livefeed" folder in order for view to view them realtime)
+      - you can add live video feed as media through vdo.ninja then add the url (put all live feed under "livefeed" folder in order for you to view them realtime -there is slight delay when switching livefeed)
 -   **🖥️ OBS Optimized**: Native transparent output mode designed for OBS Browser Sources.
 
 ## 🚀 Getting Started

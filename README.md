@@ -6,6 +6,7 @@ A professional, real-time church lyrics and multimedia presentation system built
 
 - https://codered.jcob.info/
   - email me for test credentials at jhe.rhald1103@gmail.com
+  - with subject: SongLyricsProjections
 
 ## Support This Project
 

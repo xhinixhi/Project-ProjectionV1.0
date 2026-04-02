@@ -2,6 +2,11 @@
 
 A professional, real-time church lyrics and multimedia presentation system built with **Flask**, **SQLAlchemy**, and **Socket.io**. Designed for low-latency OBS integration via Browser Source.
 
+## You can try the app here
+
+- https://codered.jcob.info/
+  - email me for test credentials at jhe.rhald1103@gmail.com
+
 ## Support This Project
 
 If this system helps your church or production team, you can support development:

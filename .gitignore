@@ -129,3 +129,8 @@ app/static/uploads/*
 .DS_Store
 .docker
 docker-compose.override.yml
+
+# Nested repositories or scratch files
+SongLyrics-Projection/
+Project.txt
+

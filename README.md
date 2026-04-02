@@ -49,8 +49,8 @@ A professional, real-time church lyrics and multimedia presentation system built
 
 ### Access URLs
 
--   **Controller Interface**: `http://localhost:5000/control` (The main operator panel)
--   **Projection Output**: `http://localhost:5000/output` (The screen you project or add to OBS)
+-   **Controller Interface**: `http://localhost:5002/control` (The main operator panel)
+-   **Projection Output**: `http://localhost:5002/output` (The screen you project or add to OBS)
 
 ## 🎨 Customizing the Output
 

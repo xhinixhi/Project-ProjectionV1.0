@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ 'Edit' if a else 'Add' }} Announcement - SongLyrics Projection{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>{{ 'Edit' if a else 'Add New' }} Announcement</h1>
+    <form action="{{ url_for('announcements.add_announcement', id=a.id if a else None, next=request.args.get('next')) }}" method="POST">
+        <div class="form-group">
+            <label for="title">Internal Title (For List Only)</label>
+            <input type="text" id="title" name="title" value="{{ a.title if a else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="header">Output Header (Appears on Screen)</label>
+            <input type="text" id="header" name="header" value="{{ a.header if a else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea id="content" name="content" rows="6" required>{{ a.content if a else '' }}</textarea>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Save Announcement</button>
+            {% if request.args.get('next') %}
+            <a href="{{ url_for(request.args.get('next')) }}" class="btn-secondary">Cancel</a>
+            {% else %}
+            <a href="{{ url_for('announcements.index') }}" class="btn-secondary">Cancel</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('keydown', function (e) {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+            e.preventDefault();
+            document.querySelector('form').submit();
+        }
+        if (e.code === 'Escape') {
+            const cancelBtn = document.querySelector('.btn-secondary');
+            if (cancelBtn) {
+                window.location.href = cancelBtn.href;
+            } else {
+                window.location.href = "{{ url_for('announcements.index') }}";
+            }
+        }
+    });
+</script>
+{% endblock %}

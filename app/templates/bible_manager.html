@@ -1,0 +1,1139 @@
+{% extends "layout.html" %}
+
+{% block title %}Bible - SongLyrics Projection{% endblock %}
+{% block body_class %}manager-page{% endblock %}
+
+{% block content %}
+<div class="manager-container">
+    <div class="panel-header">
+        <h1>📖 Bible Projection</h1>
+        <div class="bible-actions">
+            <button id="btn-popout-bible" class="btn-secondary"
+                onclick="window.open('/bible/?popout=true', 'BiblePopout', 'width=1100,height=800,left=100,top=100');">📺
+                Popout</button>
+            <button id="btn-settings-bible" class="btn-secondary"
+                onclick="document.getElementById('bible-settings-panel').classList.toggle('hidden')">⚙
+                Styling</button>
+        </div>
+    </div>
+
+    <div id="bible-settings-panel" class="settings-panel hidden" style="margin: 0 20px 20px 20px;">
+        <div class="form-group.row" style="display: flex; gap: 20px;">
+            <div class="col" style="flex: 1;">
+                <h3>Reference Styling</h3>
+                <div class="setting-group">
+                    <label>Font Family</label>
+                    <select id="bh-font-family">
+                        <optgroup label="Sans Serif">
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </optgroup>
+                        <optgroup label="Serif">
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="'Courier New', monospace">Courier</option>
+                            <option value="cursive">Cursive</option>
+                            <option value="Impact, fantasy">Impact</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-font-size-slider" min="20" max="250" value="120" style="flex: 1;">
+                        <input type="number" id="bh-font-size" value="120" min="20" max="250" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Color</label>
+                    <input type="color" id="bh-font-color" value="#ffeb3b">
+                </div>
+                <div class="setting-group">
+                    <label>Shadow Intensity</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-shadow-intensity" min="0" max="50" value="20" style="flex: 1;">
+                        <input type="number" id="bh-shadow-intensity-num" min="0" max="50" value="20"
+                            style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-border-size" min="0" max="20" value="0" style="flex: 1;" oninput="document.getElementById('bh-border-size-num').value = this.value">
+                        <input type="number" id="bh-border-size-num" value="0" min="0" max="20" style="width: 60px;" oninput="document.getElementById('bh-border-size').value = this.value">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Color</label>
+                    <input type="color" id="bh-border-color" value="#000000">
+                </div>
+                <div class="setting-group">
+                    <label>Text Case</label>
+                    <select id="bh-text-transform">
+                        <option value="none">Normal</option>
+                        <option value="uppercase" selected>ALL CAPS</option>
+                        <option value="capitalize">Capitalize</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Text Alignment</label>
+                    <select id="bh-text-align">
+                        <option value="left">Left</option>
+                        <option value="center" selected>Center</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Vertical Position</label>
+                    <select id="bh-vertical-align" title="Vertical position of the reference on screen">
+                        <option value="center" selected>Center (Default)</option>
+                        <option value="flex-start">Top</option>
+                        <option value="flex-end">Bottom (Lower Third)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>X Position (%)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-x-pos-slider" min="-100" max="100" value="0" style="flex: 1;">
+                        <input type="number" id="bh-x-pos" value="0" min="-100" max="100" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Y Position (%)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-y-pos-slider" min="-100" max="100" value="0" style="flex: 1;">
+                        <input type="number" id="bh-y-pos" value="0" min="-100" max="100" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group" style="display: flex; gap: 15px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bh-font-bold"> Bold</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bh-font-italic"> Italic</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bh-font-border"> Border</label>
+                </div>
+            </div>
+            <div class="col" style="flex: 1;">
+                <h3>Verse Styling</h3>
+                <div class="setting-group">
+                    <label>Font Family</label>
+                    <select id="bc-font-family">
+                        <optgroup label="Sans Serif">
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </optgroup>
+                        <optgroup label="Serif">
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="'Courier New', monospace">Courier</option>
+                            <option value="cursive">Cursive</option>
+                            <option value="Impact, fantasy">Impact</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-font-size-slider" min="20" max="250" value="80" style="flex: 1;">
+                        <input type="number" id="bc-font-size" value="80" min="20" max="250" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Embed Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-embed-size-slider" min="50" max="10000" value="500" style="flex: 1;">
+                        <input type="number" id="bc-embed-size" value="500" min="50" max="10000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Color</label>
+                    <input type="color" id="bc-font-color" value="#ffffff">
+                </div>
+                <div class="setting-group">
+                    <label>Shadow Intensity</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-shadow-intensity" min="0" max="50" value="20" style="flex: 1;">
+                        <input type="number" id="bc-shadow-intensity-num" min="0" max="50" value="20"
+                            style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-border-size" min="0" max="20" value="0" style="flex: 1;" oninput="document.getElementById('bc-border-size-num').value = this.value">
+                        <input type="number" id="bc-border-size-num" value="0" min="0" max="20" style="width: 60px;" oninput="document.getElementById('bc-border-size').value = this.value">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Color</label>
+                    <input type="color" id="bc-border-color" value="#000000">
+                </div>
+                <div class="setting-group">
+                    <label>Text Case</label>
+                    <select id="bc-text-transform">
+                        <option value="none" selected>Normal</option>
+                        <option value="uppercase">ALL CAPS</option>
+                        <option value="capitalize">Capitalize</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Text Alignment</label>
+                    <select id="bc-text-align">
+                        <option value="left" selected>Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Vertical Position</label>
+                    <select id="bc-vertical-align" title="Vertical position of the text on screen">
+                        <option value="center" selected>Center (Default)</option>
+                        <option value="flex-start">Top</option>
+                        <option value="flex-end">Bottom (Lower Third)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>X Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-x-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="bc-x-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Y Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-y-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="bc-y-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group" style="display: flex; gap: 15px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bc-font-bold">
+                        Bold</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bc-font-italic">
+                        Italic</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bc-font-border">
+                        Border</label>
+                </div>
+            </div>
+
+            <div class="col" style="flex: 1;">
+                <h3>Parallel Styling</h3>
+                <div class="setting-group">
+                    <label>Font Family</label>
+                    <select id="bp-font-family">
+                        <optgroup label="Sans Serif">
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </optgroup>
+                        <optgroup label="Serif">
+                            <option value="'Georgia', serif" selected>Georgia</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="'Courier New', monospace">Courier</option>
+                            <option value="cursive">Cursive</option>
+                            <option value="Impact, fantasy">Impact</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bp-font-size-slider" min="20" max="250" value="60" style="flex: 1;">
+                        <input type="number" id="bp-font-size" value="60" min="20" max="250" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Color</label>
+                    <input type="color" id="bp-font-color" value="#cccccc">
+                </div>
+                <div class="setting-group">
+                    <label>Shadow Intensity</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bp-shadow-intensity" min="0" max="50" value="10" style="flex: 1;">
+                        <input type="number" id="bp-shadow-intensity-num" min="0" max="50" value="10"
+                            style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bp-border-size" min="0" max="20" value="0" style="flex: 1;" oninput="document.getElementById('bp-border-size-num').value = this.value">
+                        <input type="number" id="bp-border-size-num" value="0" min="0" max="20" style="width: 60px;" oninput="document.getElementById('bp-border-size').value = this.value">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Color</label>
+                    <input type="color" id="bp-border-color" value="#000000">
+                </div>
+                <div class="setting-group">
+                    <label>Text Case</label>
+                    <select id="bp-text-transform">
+                        <option value="none" selected>Normal</option>
+                        <option value="uppercase">ALL CAPS</option>
+                        <option value="capitalize">Capitalize</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Text Alignment</label>
+                    <select id="bp-text-align">
+                        <option value="left" selected>Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Vertical Position</label>
+                    <select id="bp-vertical-align" title="Vertical position of the text on screen">
+                        <option value="center" selected>Center (Default)</option>
+                        <option value="flex-start">Top</option>
+                        <option value="flex-end">Bottom (Lower Third)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>X Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bp-x-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="bp-x-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Y Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bp-y-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="bp-y-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group" style="display: flex; gap: 15px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bp-font-bold">
+                        Bold</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bp-font-italic" checked>
+                        Italic</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bp-font-border">
+                        Border</label>
+                </div>
+            </div>
+        </div>
+        <div class="settings-actions" style="margin-top: 15px;">
+            <button id="btn-save-bible-settings" class="btn-primary">Save Styles</button>
+        </div>
+    </div>
+
+    <div class="manager-content scrollable">
+        <div class="manager-sections">
+            <!-- Offline Bible Search Section -->
+            <section class="offline-bible-section" style="flex: 1.5;">
+                <div class="section-header">
+                    <h2>🔍 Offline Bible</h2>
+                </div>
+                <div class="premium-search-container">
+                    <div class="search-input-group">
+                        <div class="translation-pill">
+                            <select id="bible-translation-select" title="Primary Translation">
+                                <!-- Populate via JS -->
+                            </select>
+                            <span class="pill-divider"></span>
+                        </div>
+
+                        <div class="translation-pill parallel-pill hidden" id="parallel-translation-container">
+                            <select id="bible-parallel-select" title="Parallel Translation">
+                                <!-- Populate via JS -->
+                            </select>
+                            <span class="pill-divider"></span>
+                        </div>
+
+                        <input type="text" id="bible-offline-input" list="bible-books-datalist"
+                            placeholder="Search (e.g. John 3:16 or 'faith')">
+                        <datalist id="bible-books-datalist">
+                            {% for book in bible_books %}
+                            <option value="{{ book }}">
+                                {% endfor %}
+                        </datalist>
+
+                        <div class="parallel-toggle" title="Toggle Parallel View">
+                            <label class="switch-small">
+                                <input type="checkbox" id="chk-parallel-mode">
+                                <span class="slider-round"></span>
+                            </label>
+                            <span>||</span>
+                        </div>
+
+                        <button id="btn-search-offline">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.3-4.3" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <style>
+                    .premium-search-container {
+                        margin-bottom: 25px;
+                        width: 100%;
+                    }
+
+                    .search-input-group {
+                        display: flex;
+                        align-items: center;
+                        background: rgba(255, 255, 255, 0.05);
+                        border: 2px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 12px;
+                        padding: 8px 12px;
+                        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                    }
+
+                    .search-input-group:focus-within {
+                        border-color: var(--accent);
+                        background: rgba(255, 255, 255, 0.08);
+                        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+                        transform: translateY(-1px);
+                    }
+
+                    .translation-pill {
+                        display: flex;
+                        align-items: center;
+                        background: rgba(255, 255, 255, 0.05);
+                        border-radius: 8px;
+                        padding-right: 12px;
+                        margin-right: 12px;
+                    }
+
+                    .translation-pill select {
+                        background: transparent;
+                        border: none;
+                        color: var(--accent);
+                        font-weight: 700;
+                        padding: 6px 10px;
+                        cursor: pointer;
+                        outline: none;
+                        text-transform: uppercase;
+                        font-size: 0.85rem;
+                        letter-spacing: 0.5px;
+                    }
+
+                    .pill-divider {
+                        width: 1px;
+                        height: 20px;
+                        background: rgba(255, 255, 255, 0.2);
+                        margin-left: 8px;
+                    }
+
+                    #bible-offline-input {
+                        flex: 1;
+                        background: transparent;
+                        border: none;
+                        color: white;
+                        font-size: 1.05rem;
+                        padding: 8px 4px;
+                        outline: none;
+                    }
+
+                    #bible-offline-input::placeholder {
+                        color: rgba(255, 255, 255, 0.35);
+                    }
+
+                    #btn-search-offline {
+                        background: var(--accent);
+                        border: none;
+                        border-radius: 8px;
+                        color: black;
+                        padding: 8px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.2s;
+                        margin-left: 10px;
+                    }
+
+                    #btn-search-offline:hover {
+                        opacity: 0.9;
+                        transform: scale(1.05);
+                    }
+
+                    #btn-search-offline:active {
+                        transform: scale(0.95);
+                    }
+
+                    .parallel-toggle {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 0 10px;
+                        color: rgba(255, 255, 255, 0.5);
+                        font-size: 0.8rem;
+                        font-weight: bold;
+                    }
+
+                    .switch-small {
+                        position: relative;
+                        display: inline-block;
+                        width: 34px;
+                        height: 18px;
+                    }
+
+                    .switch-small input {
+                        opacity: 0;
+                        width: 0;
+                        height: 0;
+                    }
+
+                    .slider-round {
+                        position: absolute;
+                        cursor: pointer;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-color: #444;
+                        transition: .3s;
+                        border-radius: 18px;
+                    }
+
+                    .slider-round:before {
+                        position: absolute;
+                        content: "";
+                        height: 14px;
+                        width: 14px;
+                        left: 2px;
+                        bottom: 2px;
+                        background-color: white;
+                        transition: .3s;
+                        border-radius: 50%;
+                    }
+
+                    input:checked+.slider-round {
+                        background-color: var(--accent);
+                    }
+
+                    input:checked+.slider-round:before {
+                        transform: translateX(16px);
+                    }
+
+                    .parallel-pill {
+                        background: rgba(var(--accent-rgb), 0.1) !important;
+                    }
+                </style>
+                <div id="offline-results-container" class="scrollable"
+                    style="max-height: 650px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.2);">
+                    <ul class="list-group" id="offline-bible-results">
+                        <p class="placeholder-text" style="padding: 20px;">Enter a reference or keyword above</p>
+                    </ul>
+                </div>
+
+                <!-- Quick Navigation -->
+                <div id="quick-nav-controls" class="hidden"
+                    style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); padding: 10px; border-radius: 8px;">
+                    <button class="btn-secondary" onclick="navigateBible('prev')">⬅ Previous</button>
+                    <span id="current-verse-ref" style="font-weight: bold; color: var(--accent);"></span>
+                    <button class="btn-secondary" onclick="navigateBible('next')">Next ➡</button>
+                </div>
+            </section>
+
+            <section class="weekly-section preview-pane" style="flex: 1.2;">
+                <h2>Live Preview</h2>
+                <div id="bible-preview-content" class="preview-content-box">
+                    <p class="placeholder-text">Enter a search query or send a verse from your browser</p>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentOfflineVerse = null;
+
+    async function populateTranslations() {
+        const res = await fetch('/bible/translations');
+        const translations = await res.json();
+        const select = document.getElementById('bible-translation-select');
+        const parallelSelect = document.getElementById('bible-parallel-select');
+
+        const options = translations.map(t => `<option value="${t}">${t.toUpperCase()}</option>`).join('');
+        select.innerHTML = options;
+        parallelSelect.innerHTML = options;
+
+        // Restore saved translations
+        const savedPrimary = localStorage.getItem('bible_primary_translation');
+        const savedParallel = localStorage.getItem('bible_parallel_translation');
+
+        if (savedPrimary && translations.includes(savedPrimary)) {
+            select.value = savedPrimary;
+        }
+
+        if (savedParallel && translations.includes(savedParallel)) {
+            parallelSelect.value = savedParallel;
+        } else if (translations.length > 1) {
+            parallelSelect.selectedIndex = 1;
+        }
+
+        select.onchange = () => localStorage.setItem('bible_primary_translation', select.value);
+        parallelSelect.onchange = () => localStorage.setItem('bible_parallel_translation', parallelSelect.value);
+    }
+
+    async function searchOfflineBible() {
+        const query = document.getElementById('bible-offline-input').value;
+        const translation = document.getElementById('bible-translation-select').value;
+        const parallelMode = document.getElementById('chk-parallel-mode').checked;
+        const parallelT = parallelMode ? document.getElementById('bible-parallel-select').value : '';
+
+        if (!query) return;
+
+        const res = await fetch(`/bible/search-offline?q=${encodeURIComponent(query)}&t=${translation}&p=${parallelT}`);
+        const results = await res.json();
+
+        const listEl = document.getElementById('offline-bible-results');
+        if (results.length === 0) {
+            listEl.innerHTML = '<p class="placeholder-text" style="padding: 20px;">No verses found.</p>';
+            return;
+        }
+
+        listEl.innerHTML = results.map((v, i) => `
+            <li class="list-item" id="verse-res-${i}" onclick='selectOfflineVerse(${JSON.stringify(v).replace(/'/g, "&apos;")}, true)'>
+                <div class="song-info">
+                    <strong>${v.ref}</strong>
+                    <div style="font-size: 0.85rem; color: #aaa; margin-top: 4px;">${v.text}</div>
+                </div>
+            </li>
+        `).join('');
+
+        // Attach data to elements for arrow navigation
+        results.forEach((v, i) => {
+            const el = document.getElementById(`verse-res-${i}`);
+            if (el) el._verseData = v;
+        });
+    }
+
+    function selectOfflineVerse(v, project = true) {
+        // If this is a chapter summary result
+        if (v.is_chapter_summary) {
+            // ONLY perform the new search if we are projecting (Enter or Click), NOT on Arrow preview
+            if (project) {
+                document.getElementById('bible-offline-input').value = v.ref;
+                searchOfflineBible();
+                // Ensure focus is NOT in the search box after click so Arrow Keys work
+                document.getElementById('bible-offline-input').blur();
+                return;
+            } else {
+                // Just update the preview to show chapter info
+                const preview = document.getElementById('bible-preview-content');
+                preview.innerHTML = `
+                    <div style="text-align: center;">
+                        <h2 style="color: var(--accent); margin-bottom: 10px;">${v.ref} ${v.translation}</h2>
+                        <p style="font-size: 1.1rem; color: #888;">(Press Enter to explore chapter verses)</p>
+                    </div>
+                `;
+            }
+        } else {
+            currentOfflineVerse = v;
+            const preview = document.getElementById('bible-preview-content');
+
+            let contentHtml = `
+                <div style="text-align: center;">
+                    <h2 id="preview-bible-reference" style="color: var(--accent); margin-bottom: 10px;">${v.ref} ${v.translation}</h2>
+                    <p id="preview-bible-text" style="font-size: 1.2rem; line-height: 1.4; color: white; margin-bottom: 15px;">${v.text}</p>
+            `;
+
+            if (v.parallel_text) {
+                contentHtml += `
+                    <div id="preview-parallel-container" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; margin-top: 10px;">
+                        <h3 style="color: var(--accent); opacity: 0.7; font-size: 0.9rem; margin-bottom: 5px;">${v.parallel_translation} Parallel</h3>
+                        <p id="preview-bible-parallel" style="font-size: 1.1rem; line-height: 1.4; color: rgba(255,255,255,0.8); font-style: italic;">${v.parallel_text}</p>
+                    </div>
+                `;
+            }
+
+            contentHtml += `</div>`;
+            preview.innerHTML = contentHtml;
+
+            // Apply saved styles immediately
+            if (typeof syncStyle === 'function') {
+                syncStyle('bh', 'bible-header');
+                syncStyle('bc', 'bible-content');
+                syncStyle('bp', 'bible-parallel');
+            }
+
+            // Navigation info
+            document.getElementById('quick-nav-controls').classList.remove('hidden');
+            document.getElementById('current-verse-ref').innerText = v.ref;
+
+            // Project if requested
+            if (project) {
+                projectOfflineVerse(v);
+            }
+        }
+
+        // Highlight in list (For both chapters and verses)
+        document.querySelectorAll('#offline-bible-results .list-item').forEach(el => {
+            if (el.innerText.includes(v.ref)) el.classList.add('active');
+            else el.classList.remove('active');
+        });
+    }
+
+    async function navigateBible(direction) {
+        if (!currentOfflineVerse) return;
+        const translation = document.getElementById('bible-translation-select').value;
+        const parallelMode = document.getElementById('chk-parallel-mode').checked;
+        const parallelT = parallelMode ? document.getElementById('bible-parallel-select').value : '';
+
+        // Use regex to split ref into book, chapter, verse
+        const match = currentOfflineVerse.ref.match(/^(.+)\s(\d+):(\d+)$/);
+        if (!match) return;
+
+        const [_, book, chapter, verse] = match;
+        const res = await fetch(`/bible/navigation?dir=${direction}&t=${translation}&p=${parallelT}&b=${encodeURIComponent(book)}&c=${chapter}&v=${verse}`);
+        const nextVerse = await res.json();
+
+        if (nextVerse.error) {
+            console.warn(nextVerse.error);
+            return;
+        }
+
+        selectOfflineVerse(nextVerse);
+    }
+
+    // Global Key Listening for Arrow Navigation
+    document.addEventListener('keydown', (e) => {
+        // Only navigate if an input or textarea is NOT focused
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+
+        if (e.key === 'ArrowLeft') {
+            navigateBible('prev');
+        } else if (e.key === 'ArrowRight') {
+            navigateBible('next');
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const results = document.querySelectorAll('#offline-bible-results .list-item');
+            if (results.length > 0) {
+                let currentIndex = Array.from(results).findIndex(el => el.classList.contains('active'));
+                const nextIndex = (currentIndex + 1 < results.length) ? currentIndex + 1 : 0;
+                const nextEl = results[nextIndex];
+                if (nextEl._verseData) {
+                    selectOfflineVerse(nextEl._verseData, false); // Select (preview) only
+                    nextEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const results = document.querySelectorAll('#offline-bible-results .list-item');
+            if (results.length > 0) {
+                let currentIndex = Array.from(results).findIndex(el => el.classList.contains('active'));
+                const prevIndex = (currentIndex > 0) ? currentIndex - 1 : results.length - 1;
+                const prevEl = results[prevIndex];
+                if (prevEl._verseData) {
+                    selectOfflineVerse(prevEl._verseData, false); // Select (preview) only
+                    prevEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            }
+        } else if (e.key === 'Enter') {
+            const results = document.querySelectorAll('#offline-bible-results .list-item');
+            if (results.length > 0) {
+                const active = Array.from(results).find(el => el.classList.contains('active')) || results[0];
+                if (active._verseData) {
+                    selectOfflineVerse(active._verseData, true); // Project explicitly
+                }
+            }
+        } else if (e.code === 'Space') {
+            e.preventDefault();
+            const input = document.getElementById('bible-offline-input');
+            input.focus();
+            input.select();
+        }
+    });
+
+    function projectOfflineVerse(v) {
+        if (typeof socket !== 'undefined') {
+            socket.emit('select_bible', {
+                verse: `${v.ref} ${v.translation.toUpperCase()}`,
+                content: v.text,
+                parallel_content: v.parallel_text ? `[${v.parallel_translation.toUpperCase()}] ${v.parallel_text}` : ''
+            });
+        }
+    }
+
+    const syncStyle = (prefix, target) => {
+        const styles = {
+            fontFamily: document.getElementById(`${prefix}-font-family`).value,
+            fontSize: document.getElementById(`${prefix}-font-size`).value + 'px',
+            color: document.getElementById(`${prefix}-font-color`).value,
+            textShadow: `0 0 ${document.getElementById(`${prefix}-shadow-intensity`).value}px rgba(0,0,0,0.8)`,
+            textTransform: document.getElementById(`${prefix}-text-transform`).value,
+            textAlign: document.getElementById(`${prefix}-text-align`).value,
+            fontWeight: document.getElementById(`${prefix}-font-bold`).checked ? 'bold' : 'normal',
+            fontStyle: document.getElementById(`${prefix}-font-italic`).checked ? 'italic' : 'normal',
+            "--x-pos": document.getElementById(`${prefix}-x-pos`).value + '%',
+            "--y-pos": document.getElementById(`${prefix}-y-pos`).value + '%',
+            webkitTextStroke: (document.getElementById(`${prefix}-font-border`).checked) ? `${document.getElementById(`${prefix}-border-size`).value}px ${document.getElementById(`${prefix}-border-color`).value}` : 'inherit'
+        };
+
+        const verticalEl = document.getElementById(`${prefix}-vertical-align`);
+        if (verticalEl) styles.alignSelf = verticalEl.value;
+
+        // Apply to preview on this page if it exists
+        const previewMap = {
+            'bible-header': 'preview-bible-reference',
+            'bible-content': 'preview-bible-text',
+            'bible-parallel': 'preview-bible-parallel'
+        };
+        const previewEl = document.getElementById(previewMap[target]);
+        if (previewEl) {
+            for (const [key, value] of Object.entries(styles)) {
+                if (key.startsWith('--')) {
+                    previewEl.style.setProperty(key, value);
+                } else {
+                    previewEl.style[key] = value;
+                }
+            }
+        }
+
+        if (typeof socket !== 'undefined') {
+            socket.emit('style_update', { target, styles });
+        }
+    };
+
+    const setupPrefix = (prefix, target) => {
+        const controls = [
+            `${prefix}-font-family`, `${prefix}-font-size`, `${prefix}-font-size-slider`,
+            `${prefix}-font-color`, `${prefix}-shadow-intensity`, `${prefix}-shadow-intensity-num`,
+            `${prefix}-text-transform`, `${prefix}-text-align`, `${prefix}-font-bold`, `${prefix}-font-italic`,
+            `${prefix}-x-pos`, `${prefix}-x-pos-slider`, `${prefix}-y-pos`, `${prefix}-y-pos-slider`,
+            `${prefix}-border-size`, `${prefix}-border-size-num`, `${prefix}-border-color`, `${prefix}-font-border`
+        ];
+        const verticalEl = `${prefix}-vertical-align`;
+        if (document.getElementById(verticalEl)) controls.push(verticalEl);
+
+        controls.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const eventType = el.type === 'range' || el.type === 'number' || el.type === 'color' ? 'input' : 'change';
+            el.addEventListener(eventType, () => {
+                // Sync numeric inputs
+                if (id.includes('font-size')) {
+                    const otherId = id.endsWith('slider') ? id.replace('-slider', '') : id + '-slider';
+                    document.getElementById(otherId).value = el.value;
+                }
+                if (id.includes('shadow-intensity')) {
+                    const otherId = id.endsWith('-num') ? id.replace('-num', '') : id + '-num';
+                    document.getElementById(otherId).value = el.value;
+                }
+                if (id.includes('-x-pos') || id.includes('-y-pos')) {
+                    const otherId = id.endsWith('slider') ? id.replace('-slider', '') : id + '-slider';
+                    document.getElementById(otherId).value = el.value;
+                }
+                if (id.includes('border-size')) {
+                    const otherId = id.endsWith('-num') ? id.replace('-num', '') : id + '-num';
+                    document.getElementById(otherId).value = el.value;
+                }
+
+                syncStyle(prefix, target);
+            });
+        });
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Sync vertical align dropdowns
+        const vAlignIds = ['bh-vertical-align', 'bc-vertical-align', 'bp-vertical-align'];
+        vAlignIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.onchange = (e) => {
+                vAlignIds.forEach(otherId => {
+                    const otherEl = document.getElementById(otherId);
+                    if (otherEl && otherId !== id && otherEl.value !== e.target.value) {
+                        otherEl.value = e.target.value;
+                        otherEl.dispatchEvent(new Event('change'));
+                    }
+                });
+            };
+        });
+
+        populateTranslations();
+        setupPrefix('bh', 'bible-header');
+        setupPrefix('bc', 'bible-content');
+        setupPrefix('bp', 'bible-parallel');
+
+        const bibleInput = document.getElementById('bible-offline-input');
+        let lastSearchQuery = '';
+
+        bibleInput.addEventListener('focus', () => {
+            bibleInput.select();
+        });
+
+        bibleInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                const val = bibleInput.value.trim().toLowerCase();
+                if (val.length === 0) return;
+
+                const datalist = document.getElementById('bible-books-datalist');
+                const options = Array.from(datalist.options);
+
+                // Find first item that starts with the current value
+                const match = options.find(opt => opt.value.toLowerCase().startsWith(val));
+                if (match) {
+                    e.preventDefault();
+                    if (bibleInput.value !== match.value + ' ') {
+                        bibleInput.value = match.value + ' ';
+                        // Dispatch input event to ensure datalist updates
+                        bibleInput.dispatchEvent(new Event('input'));
+                    }
+                }
+            } else if (e.key === 'Enter') {
+                const currentQuery = bibleInput.value.trim();
+                const results = document.querySelectorAll('#offline-bible-results .list-item');
+
+                // If same query as last search AND we have results, project the first result
+                if (currentQuery && currentQuery === lastSearchQuery && results.length > 0) {
+                    results[0].click(); // Simulate click on the first result
+                } else if (currentQuery) {
+                    lastSearchQuery = currentQuery;
+                    searchOfflineBible();
+                    bibleInput.select();
+                    bibleInput.blur(); // Remove focus to enable Arrow navigation
+                }
+            }
+        });
+
+        document.getElementById('btn-search-offline').onclick = () => {
+            lastSearchQuery = bibleInput.value.trim();
+            searchOfflineBible();
+        };
+
+        // Restore Parallel Mode
+        const savedParallelMode = localStorage.getItem('bible_parallel_mode') === 'true';
+        const chkParallel = document.getElementById('chk-parallel-mode');
+        chkParallel.checked = savedParallelMode;
+        if (savedParallelMode) document.getElementById('parallel-translation-container').classList.remove('hidden');
+
+        chkParallel.onchange = (e) => {
+            const container = document.getElementById('parallel-translation-container');
+            if (e.target.checked) container.classList.remove('hidden');
+            else container.classList.add('hidden');
+            localStorage.setItem('bible_parallel_mode', e.target.checked);
+
+            // Re-search if we have a query
+            if (document.getElementById('bible-offline-input').value) searchOfflineBible();
+        };
+
+        const INITIAL_BIBLE_SETTINGS = {{ settings | tojson | safe }};
+
+    // Initialize everything on load
+    async function initializeBibleUI() {
+        try {
+            // 1. Populate translations and wait
+            await populateTranslations();
+
+            // 2. Fetch all persistent settings (or use initial if available)
+            let data = INITIAL_BIBLE_SETTINGS;
+            if (!data || Object.keys(data).length === 0) {
+                const res = await fetch('/api/settings?t=' + Date.now());
+                data = await res.json();
+            }
+
+            const map = { 'bh': 'bible-header', 'bc': 'bible-content', 'bp': 'bible-parallel' };
+
+            // 3. Apply to UI elements
+            Object.keys(map).forEach(prefix => {
+                const targetKey = map[prefix];
+                if (data[targetKey]) {
+                    try {
+                        const styles = (typeof data[targetKey] === 'string') ? JSON.parse(data[targetKey]) : data[targetKey];
+                        const getEl = (suffix) => document.getElementById(`${prefix}-${suffix}`);
+
+                        // Set Font Family (with lenient matching)
+                        if (styles.fontFamily && getEl('font-family')) {
+                            const select = getEl('font-family');
+                            const val = styles.fontFamily.replace(/['"]/g, '').toLowerCase();
+                            // Try to find a match if the exact string fails
+                            let matched = false;
+                            for (let opt of select.options) {
+                                if (opt.value === styles.fontFamily || opt.value.replace(/['"]/g, '').toLowerCase().includes(val)) {
+                                    select.value = opt.value;
+                                    matched = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Set Font Size
+                        if (styles.fontSize) {
+                            const val = parseInt(styles.fontSize);
+                            if (getEl('font-size')) getEl('font-size').value = val;
+                            if (getEl('font-size-slider')) getEl('font-size-slider').value = val;
+                        }
+
+                        // Embed Size
+                        if (styles["--embed-size"]) {
+                            const val = parseInt(styles["--embed-size"]);
+                            if (getEl('embed-size')) getEl('embed-size').value = val;
+                            if (getEl('embed-size-slider')) getEl('embed-size-slider').value = val;
+                        }
+
+                        // Color
+                        if (styles.color && getEl('font-color')) {
+                            getEl('font-color').value = styles.color;
+                        }
+
+                        // Shadow
+                        if (styles.textShadow) {
+                            const sMatch = styles.textShadow.match(/(\d+)px/);
+                            if (sMatch) {
+                                if (getEl('shadow-intensity')) getEl('shadow-intensity').value = sMatch[1];
+                                if (getEl('shadow-intensity-num')) getEl('shadow-intensity-num').value = sMatch[1];
+                            }
+                        }
+
+                        // Alignment & Transforms
+                        if (styles.textTransform && getEl('text-transform')) getEl('text-transform').value = styles.textTransform;
+                        if (styles.textAlign && getEl('text-align')) getEl('text-align').value = styles.textAlign;
+
+                        // Vertical Align
+                        if (styles.alignSelf && getEl('vertical-align')) {
+                            getEl('vertical-align').value = styles.alignSelf;
+                        }
+
+                        // Bold/Italic
+                        if (getEl('font-bold')) getEl('font-bold').checked = (styles.fontWeight === 'bold');
+                        if (getEl('font-italic')) getEl('font-italic').checked = (styles.fontStyle === 'italic');
+
+                        // X/Y Position
+                        if (styles["--x-pos"] && getEl('x-pos')) {
+                            const val = parseInt(styles["--x-pos"]);
+                            getEl('x-pos').value = val;
+                            if (getEl('x-pos-slider')) getEl('x-pos-slider').value = val;
+                        }
+                        if (styles["--y-pos"] && getEl('y-pos')) {
+                            const val = parseInt(styles["--y-pos"]);
+                            getEl('y-pos').value = val;
+                            if (getEl('y-pos-slider')) getEl('y-pos-slider').value = val;
+                        }
+                        // Set Border
+                        if (styles.webkitTextStroke) {
+                            const bMatch = styles.webkitTextStroke.match(/(\d+)px (#[0-9a-fA-F]+|transparent)/);
+                            if (bMatch) {
+                                const size = parseInt(bMatch[1]);
+                                const color = bMatch[2];
+                                if (getEl('border-size')) getEl('border-size').value = size;
+                                if (getEl('border-size-num')) getEl('border-size-num').value = size;
+                                if (getEl('border-color')) getEl('border-color').value = color;
+                                if (getEl('font-border')) getEl('font-border').checked = (size > 0 && color !== 'transparent');
+                            } else if (styles.webkitTextStroke === 'inherit') {
+                                if (getEl('font-border')) getEl('font-border').checked = true; // Use checked for inherit
+                                if (getEl('border-size')) getEl('border-size').value = 0;
+                                if (getEl('border-size-num')) getEl('border-size-num').value = 0;
+                            }
+                        } else {
+                            if (getEl('font-border')) getEl('font-border').checked = false;
+                        }
+
+                        // 4. Force a preview update for this section
+                        syncStyle(prefix, targetKey);
+
+                    } catch (e) { console.error("Error applying settings for", prefix, e); }
+                }
+            });
+
+            // Restore Parallel Mode Toggle
+            if (chkParallel) {
+                const mode = localStorage.getItem('bible_parallel_mode') === 'true';
+                chkParallel.checked = mode;
+                const container = document.getElementById('parallel-translation-container');
+                if (mode) container.classList.remove('hidden');
+                else container.classList.add('hidden');
+            }
+
+        } catch (err) {
+            console.error("Bible UI Init failed", err);
+        }
+    }
+
+    initializeBibleUI();
+
+    document.getElementById('btn-save-bible-settings').onclick = () => {
+        const data = {};
+        const prefixes = { 'bh': 'bible-header', 'bc': 'bible-content', 'bp': 'bible-parallel' };
+
+        Object.keys(prefixes).forEach(prefix => {
+            const targetKey = prefixes[prefix];
+            const styles = {
+                fontFamily: document.getElementById(`${prefix}-font-family`).value,
+                fontSize: document.getElementById(`${prefix}-font-size`).value + 'px',
+                color: document.getElementById(`${prefix}-font-color`).value,
+                textShadow: `0 0 ${document.getElementById(`${prefix}-shadow-intensity`).value}px rgba(0,0,0,0.8)`,
+                textTransform: document.getElementById(`${prefix}-text-transform`).value,
+                textAlign: document.getElementById(`${prefix}-text-align`).value,
+                fontWeight: document.getElementById(`${prefix}-font-bold`).checked ? 'bold' : 'normal',
+                fontStyle: document.getElementById(`${prefix}-font-italic`).checked ? 'italic' : 'normal',
+                "--embed-size": document.getElementById(`${prefix}-embed-size`) ? document.getElementById(`${prefix}-embed-size`).value + 'px' : '500px',
+                "--x-pos": document.getElementById(`${prefix}-x-pos`).value + 'px',
+                "--y-pos": document.getElementById(`${prefix}-y-pos`).value + 'px',
+                webkitTextStroke: (document.getElementById(`${prefix}-font-border`).checked) ? `${document.getElementById(`${prefix}-border-size`).value}px ${document.getElementById(`${prefix}-border-color`).value}` : 'inherit'
+            };
+
+            // Only save vertical position (container style) to the bible-header target
+            if (prefix === 'bh') {
+                styles.alignSelf = document.getElementById('bh-vertical-align').value;
+            }
+
+            data[targetKey] = JSON.stringify(styles);
+        });
+
+        fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    showAlert("Bible styles saved!", "Success");
+                }
+            });
+    };
+
+    // Handle pending publish from extension (Redirected from main.js)
+    const pending = localStorage.getItem('pending_bible_publish');
+    if (pending) {
+        try {
+            const data = JSON.parse(pending);
+            localStorage.removeItem('pending_bible_publish');
+            // Brief delay to allow default media to load first
+            setTimeout(() => {
+                socket.emit('select_bible', {
+                    verse: data.verse,
+                    content: data.content,
+                    parallel_content: data.parallel_content || ''
+                });
+            }, 500);
+        } catch (e) {
+            console.error("Error processing pending bible publish", e);
+        }
+    }
+    });
+
+</script>
+{% endblock %}

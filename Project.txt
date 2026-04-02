@@ -1,0 +1,331 @@
+Build a scalable offline church lyrics presentation system using Flask, SQLAlchemy, Flask-SocketIO, and SQLite.
+
+The system runs locally on macOS and integrates with OBS using a Browser Source. The OBS Browser Source loads /output and must have a transparent background. OBS handles video backgrounds — the web app renders only lyrics.
+
+🔧 Core Requirements
+1️⃣ Architecture
+
+Use scalable folder structure:
+
+project/
+│
+├── app/
+│   ├── __init__.py
+│   ├── models/
+│   │   ├── song.py
+│   │   ├── service.py
+│   │
+│   ├── routes/
+│   │   ├── songs.py
+│   │   ├── control.py
+│   │   ├── output.py
+│   │   ├── services.py
+│   │
+│   ├── sockets/
+│   │   └── events.py
+│   │
+│   ├── templates/
+│   │   ├── control.html
+│   │   ├── output.html
+│   │   ├── add_song.html
+│   │   ├── edit_service.html
+│   │
+│   ├── static/
+│   │   ├── css/
+│   │   ├── js/
+│
+├── config.py
+├── run.py
+└── requirements.txt
+
+Use:
+
+Flask
+
+Flask-SQLAlchemy
+
+Flask-Migrate
+
+Flask-SocketIO
+
+SQLite (local file database)
+Offline-only, no authentication required.
+
+🎵 2️⃣ Song System
+Database Tables
+songs
+
+id (PK)
+
+title
+
+author
+
+key
+
+created_at
+
+song_sections
+
+id (PK)
+
+song_id (FK)
+
+section_type (verse, chorus, bridge, tag, intro, outro)
+
+section_number (integer)
+
+content (text)
+
+display_order (integer)
+
+Section tag format:
+
+V1, V2
+
+C1, C2
+
+B1
+
+T1
+
+O1
+
+Tag generation: first letter of section_type (uppercase) + section_number.
+
+Add Song & Song Library
+
+Controller page must include full song library:
+
+Search by title, author, or keyword
+
+Scrollable song list
+
+Button: Add Song opens form (structured sections or raw [V1]… format)
+
+Button: Add to Active Service Lineup
+
+Newly added songs appear immediately in song library and are available for service lineup.
+
+📋 3️⃣ Service Lineup System
+Tables
+services
+
+id
+
+name
+
+service_date
+
+is_active (boolean)
+
+service_items
+
+id
+
+service_id (FK)
+
+item_type ("song", "custom", "bible") — initially just "song"
+
+item_id (song_id)
+
+position (integer order)
+
+Only one service active at a time.
+
+Service Workflow
+
+Select or create service
+
+Search song library
+
+Click Add to Lineup → song appears in lineup panel
+
+Drag & drop to reorder
+
+During service: click song → load sections
+
+Click section buttons → OBS output updates
+
+🎛 4️⃣ Controller Page Layout
+LEFT PANEL: Song Library
+
+Full list of songs
+
+Search bar
+
+“Add Song” button
+
+“Add to Lineup” button next to each song
+
+MIDDLE PANEL: Service Lineup
+
+Shows songs in active service order
+
+Drag & drop to reorder
+
+Highlight current song
+
+Next / Previous song navigation
+
+RIGHT PANEL: Song Preview + Section Buttons
+
+Full lyrics of selected song (all sections)
+
+Section buttons: V1, C1, B1…
+
+Clicking section updates OBS output in real-time
+
+Highlight current section in preview
+
+Auto-scroll preview to active section
+
+Optional: Keyboard Shortcuts
+
+Arrow Right → next section
+
+Arrow Left → previous section
+
+📺 5️⃣ Output Page (OBS Browser Source)
+
+Route: /output
+
+Requirements:
+
+Transparent background
+
+Fullscreen layout (100vh)
+
+Centered lyrics
+
+Large, responsive font
+
+Text shadow for readability
+
+Smooth fade transition when section changes
+
+No UI or flicker
+
+Auto-scale text for long lines
+
+Example CSS:
+
+body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.lyrics {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  font-size: clamp(40px, 5vw, 90px);
+  color: white;
+  text-shadow: 0px 0px 20px rgba(0,0,0,0.8);
+  padding: 5%;
+}
+🔄 6️⃣ Real-Time Engine
+
+Use Flask-SocketIO.
+
+Flow:
+
+Controller emits select_section
+
+Server broadcasts update_slide
+
+Output listens and updates DOM
+
+Supports multiple output connections simultaneously.
+
+No polling, no refresh.
+
+⚡ 7️⃣ Performance & Stability
+
+Add DB indexes
+
+Cache active service in memory
+
+Prevent unnecessary DB queries
+
+Smooth OBS updates
+
+Minimal latency on section switching
+
+🧩 8️⃣ Scalability
+
+Future-proof design for:
+
+Bible module
+
+Custom slides
+
+Stage display (/output/stage)
+
+Multi-output support
+
+Theme engine
+
+Multi-user roles (optional)
+
+🎨 9️⃣ UI/UX Requirements
+
+Dark theme for controller
+
+Clean modern layout
+
+Hover and active states
+
+Responsive design for tablets/phones
+
+Highlight current section in preview
+
+Drag & drop service ordering
+
+🚀 10️⃣ Deliverables
+
+Generate:
+
+All models
+
+Routes
+
+Templates
+
+CSS + JS
+
+SocketIO events
+
+run.py
+
+requirements.txt
+
+System should run locally:
+
+pip install -r requirements.txt
+python run.py
+
+Default URLs:
+
+http://localhost:5000/control → controller with song library, service lineup, preview, section buttons
+
+http://localhost:5000/output → OBS output with only current section lyrics
+
+🎯 Design Philosophy
+
+Offline-only, OBS-friendly, scalable, modular.
+
+Controller integrates:
+
+All song library + search + Add Song
+
+Service lineup
+
+Full lyrics preview with highlighted current section
+
+Section buttons for live OBS output
+
+System functions like OpenLP but fully web-based and customizable.

@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+
+{% block title %}Editor - Project Content{% endblock %}
+
+{% block content %}
+<div class="editor-dashboard">
+    <header class="dashboard-header">
+        <div class="header-top">
+            <h1>Editor</h1>
+            {% if current_user.id == 1 %}
+            <a href="javascript:window.close();" class="exit-btn" style="background: rgba(255, 68, 68, 0.1); border-color: #ff5252; color: #ff5252;">Close Editor</a>
+            {% else %}
+            <a href="{{ url_for('editor.logout') }}" class="exit-btn">Logout</a>
+            {% endif %}
+        </div>
+        <p>A clean environment for updating lyrics and content without affecting the live output.</p>
+    </header>
+
+    <div class="editor-grid">
+        <a href="{{ url_for('editor.songs') }}" class="editor-card">
+            <div class="card-icon">🎵</div>
+            <div class="card-content">
+                <h3>Song Lyrics</h3>
+                <p>Update or add new songs to the library.</p>
+            </div>
+            <div class="card-arrow">→</div>
+        </a>
+
+        <a href="{{ url_for('editor.birthdays') }}" class="editor-card">
+            <div class="card-icon">🎂</div>
+            <div class="card-content">
+                <h3>Birthdays</h3>
+                <p>Add new celebrants or update existing ones.</p>
+            </div>
+            <div class="card-arrow">→</div>
+        </a>
+
+        <a href="{{ url_for('editor.announcements') }}" class="editor-card">
+            <div class="card-icon">📢</div>
+            <div class="card-content">
+                <h3>Announcements</h3>
+                <p>Add or edit weekly announcements.</p>
+            </div>
+            <div class="card-arrow">→</div>
+        </a>
+
+        <a href="{{ url_for('editor.live') }}" class="editor-card">
+            <div class="card-icon">🎙️</div>
+            <div class="card-content">
+                <h3>Live Content 1</h3>
+                <p>Manage lower-third text or custom live notes.</p>
+            </div>
+            <div class="card-arrow">→</div>
+        </a>
+
+        <a href="{{ url_for('editor.live2') }}" class="editor-card">
+            <div class="card-icon">🎙️</div>
+            <div class="card-content">
+                <h3>Live Content 2</h3>
+                <p>Secondary live text management.</p>
+            </div>
+            <div class="card-arrow">→</div>
+        </a>
+    </div>
+</div>
+
+<style>
+/* Dashboard Styles */
+.editor-dashboard {
+    padding: 60px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    margin-bottom: 50px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.exit-btn {
+    padding: 10px 20px;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    color: #ff5252;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.exit-btn:hover {
+    background: rgba(255, 68, 68, 0.2);
+    border-color: #ff5252;
+}
+
+.dashboard-header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dashboard-header p {
+    color: #777;
+    font-size: 1.2rem;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+.editor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.editor-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 30px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.editor-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent, #2196f3);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.editor-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent, #2196f3);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.editor-card:hover::before {
+    opacity: 1;
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-right: 20px;
+}
+
+.card-content h3 {
+    font-size: 1.25rem;
+    margin-bottom: 5px;
+}
+
+.card-content p {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.card-arrow {
+    margin-left: auto;
+    font-size: 1.5rem;
+    opacity: 0.3;
+    transition: all 0.3s;
+}
+
+.editor-card:hover .card-arrow {
+    opacity: 1;
+    transform: translateX(5px);
+}
+</style>
+{% endblock %}

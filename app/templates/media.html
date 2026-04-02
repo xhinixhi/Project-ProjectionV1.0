@@ -1,0 +1,654 @@
+{% extends "layout.html" %}
+
+{% block title %}Media Manager - SongLyrics Projection{% endblock %}
+{% block body_class %}media-manager-page manager-page{% endblock %}
+
+{% block content %}
+<div class="media-manager-v2">
+    <!-- Top Header / Controls -->
+    <header class="media-header">
+        <div class="header-left">
+            <h2 class="page-title">Media Center</h2>
+            <div class="global-controls">
+                <button id="btn-clear-media" class="btn-clear">⏹ Stop Media</button>
+                <div class="control-item">
+                    <label>Resize</label>
+                    <select id="media-resize-mode">
+                        <option value="fill">Fill</option>
+                        <option value="fit">Fit</option>
+                        <option value="stretch">Stretch</option>
+                    </select>
+                </div>
+                <div class="control-item slider-item">
+                    <label>X: <span id="val-x">50</span>%</label>
+                    <input type="range" id="media-pos-x" min="0" max="100" value="50">
+                </div>
+                <div class="control-item slider-item">
+                    <label>Y: <span id="val-y">50</span>%</label>
+                    <input type="range" id="media-pos-y" min="0" max="100" value="50">
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button onclick="document.getElementById('media-file-input').click()" class="btn-action">Upload File</button>
+            <input type="file" id="media-file-input" style="display: none;" accept="image/*,video/*,.html">
+            <button id="btn-add-url" class="btn-action secondary">Add URL</button>
+        </div>
+    </header>
+
+    <!-- Folder Navigation -->
+    <nav class="folder-nav" id="media-category-filters">
+        <!-- Folders injected here -->
+    </nav>
+
+    <!-- Content Area -->
+    <div class="media-content-area">
+        <div class="search-bar">
+            <input type="text" id="media-search" placeholder="Search files in this folder...">
+        </div>
+
+        <!-- Live Feed Previews (Always preloaded for livefeed folder) -->
+        <div id="livefeed-container" class="livefeed-grid hidden">
+            <!-- Iframes injected here for fast reflection -->
+        </div>
+
+        <!-- Main Media List -->
+        <div id="media-list-container" class="media-list">
+            <!-- Filename list injected here -->
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --header-height: 70px;
+    --folder-nav-height: 60px;
+    --accent: #64ffda;
+    --bg-dark: #0a0a0c;
+    --bg-panel: #141418;
+    --border: #2d2d35;
+}
+
+.media-manager-v2 {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--bg-dark);
+    color: #e0e0e0;
+    overflow: hidden;
+}
+
+/* Header */
+.media-header {
+    height: var(--header-height);
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.global-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.btn-clear {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-clear:hover {
+    background: #c0392b;
+}
+
+.control-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.control-item label {
+    font-size: 0.7rem;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.control-item select {
+    background: #1d1d23;
+    color: white;
+    border: 1px solid #3d3d45;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.slider-item {
+    width: 100px;
+}
+
+.slider-item input {
+    height: 4px;
+    width: 100%;
+}
+
+.header-right {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-action {
+    background: var(--accent);
+    color: #0a0a0c;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-action.secondary {
+    background: #2d2d35;
+    color: white;
+    border: 1px solid var(--border);
+}
+
+/* Folder Nav */
+.folder-nav {
+    height: var(--folder-nav-height);
+    background: #1a1a20;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    gap: 10px;
+    overflow-x: auto;
+    flex-shrink: 0;
+}
+
+.filter-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    color: white;
+    background: rgba(255,255,255,0.05);
+}
+
+.filter-btn.active {
+    color: #0a0a0c;
+    background: var(--accent);
+}
+
+/* Content Area */
+.media-content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.search-bar input {
+    width: 100%;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Livefeed Grid */
+.livefeed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.livefeed-card {
+    background: var(--bg-panel);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    aspect-ratio: 16/9;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.livefeed-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+}
+
+.livefeed-card.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 25px rgba(100, 255, 218, 0.3);
+}
+
+.livefeed-card iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    pointer-events: none; /* Allows click to bubble to card */
+    background: #000;
+}
+
+.livefeed-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 15px 12px 8px 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.livefeed-status {
+    background: #ff5252;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Media List */
+.media-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.media-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.media-item:hover {
+    background: #1d1d23;
+    border-color: #3d3d45;
+    transform: translateX(4px);
+}
+
+.media-item.active {
+    background: rgba(100, 255, 218, 0.08);
+    border-left: 4px solid var(--accent);
+    padding-left: 16px;
+}
+
+.media-filename {
+    font-weight: 500;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.95rem;
+}
+
+.media-meta {
+    font-size: 0.75rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.media-actions {
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.media-item:hover .media-actions {
+    opacity: 1;
+}
+
+.btn-delete-small {
+    background: none;
+    border: 1px solid #444;
+    color: #888;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn-delete-small:hover {
+    color: #ff5252;
+    border-color: #ff5252;
+}
+
+.hidden { display: none !important; }
+
+/* Custom Range styling */
+input[type=range] {
+    accent-color: var(--accent);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const mediaSearch = document.getElementById('media-search');
+    const mediaList = document.getElementById('media-list-container');
+    const livefeedGrid = document.getElementById('livefeed-container');
+    const folderNav = document.getElementById('media-category-filters');
+    const posX = document.getElementById('media-pos-x');
+    const posY = document.getElementById('media-pos-y');
+    const valX = document.getElementById('val-x');
+    const valY = document.getElementById('val-y');
+    const resizeModeSelect = document.getElementById('media-resize-mode');
+    
+    let allMedia = [];
+    let currentFolder = 'all';
+
+    const getSocket = () => {
+        if (window.socket && window.socket.connected) return window.socket;
+        if (!window.localSocket) {
+            window.localSocket = io({ transports: ['websocket', 'polling'] });
+            window.localSocket.on('connect', () => console.log("Media local socket connected"));
+        }
+        return window.localSocket;
+    };
+
+    function loadMedia() {
+        fetch('/api/videos/')
+            .then(res => res.json())
+            .then(data => {
+                allMedia = data;
+                renderFolders();
+                renderContent();
+            });
+    }
+
+    function renderFolders() {
+        const categories = [...new Set(allMedia.map(m => m.category))].filter(c => c !== 'general').sort();
+        const folders = ['all', 'general', ...categories];
+        
+        folderNav.innerHTML = folders.map(f => `
+            <button class="filter-btn ${currentFolder === f ? 'active' : ''}" data-folder="${f}">
+                ${f.toUpperCase()}
+            </button>
+        `).join('');
+
+        folderNav.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                currentFolder = btn.dataset.folder;
+                renderFolders(); // Update active state
+                renderContent();
+            };
+        });
+    }
+
+    function renderContent() {
+        const query = mediaSearch.value.toLowerCase();
+        
+        const filtered = allMedia.filter(m => {
+            const matchesQuery = m.name.toLowerCase().includes(query);
+            const matchesFolder = (currentFolder === 'all') || (m.category === currentFolder);
+            return matchesQuery && matchesFolder;
+        }).sort((a,b) => a.name.localeCompare(b.name));
+
+        // Separate Livefeed items for special grid handling
+        const livefeeds = filtered.filter(m => m.category === 'livefeed');
+        const standard = filtered.filter(m => m.category !== 'livefeed');
+
+        // Render Livefeed Grid (Preloaded iframes)
+        if (livefeeds.length > 0) {
+            livefeedGrid.classList.remove('hidden');
+            livefeedGrid.innerHTML = livefeeds.map(m => `
+                <div class="livefeed-card" data-url="${m.url}" data-type="${m.type}" onclick="selectMediaItem('${m.url}', '${m.type}', this)">
+                    <iframe src="${m.url}${m.url.includes('?') ? '&' : '?'}autoplay=1&mute=1&controls=0&preview=1" allow="autoplay; fullscreen"></iframe>
+                    <div class="livefeed-label">
+                        <span>${m.name}</span>
+                        <span class="livefeed-status">PREVIEWING</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            livefeedGrid.classList.add('hidden');
+        }
+
+        // Render Standard List
+        mediaList.innerHTML = standard.map(m => `
+            <div class="media-item" data-url="${m.url}" data-type="${m.type}" onclick="selectMediaItem('${m.url}', '${m.type}', this)">
+                <div class="media-filename">${m.name}</div>
+                <div class="media-meta">
+                    <span>${m.type.toUpperCase()}</span>
+                    <span>${m.category.toUpperCase()}</span>
+                    <div class="media-actions">
+                        <button class="btn-delete-small" onclick="event.stopPropagation(); deleteItem('${m.file_path || m.url}')">DELETE</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.selectMediaItem = (url, type, el) => {
+        const item = allMedia.find(m => m.url === url) || { url, type };
+        const resizeMode = resizeModeSelect.value;
+        const x = posX.value;
+        const y = posY.value;
+
+        document.querySelectorAll('.livefeed-card, .media-item').forEach(c => c.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        const socket = getSocket();
+        if (socket) {
+            socket.emit('video_update', { 
+                ...item, 
+                resizeMode, 
+                posX: x, 
+                posY: y 
+            });
+        }
+    };
+
+    const updateControls = () => {
+        valX.innerText = posX.value;
+        valY.innerText = posY.value;
+        
+        const active = document.querySelector('.active[data-url]');
+        if (active) {
+            const url = active.dataset.url;
+            const type = active.dataset.type;
+            const resizeMode = resizeModeSelect.value;
+            const socket = getSocket();
+            if (socket) {
+                socket.emit('video_update', { url, type, resizeMode, posX: posX.value, posY: posY.value });
+            }
+        }
+    };
+
+    posX.oninput = updateControls;
+    posY.oninput = updateControls;
+    resizeModeSelect.onchange = updateControls;
+
+    document.getElementById('btn-clear-media').onclick = () => {
+        document.querySelectorAll('.active').forEach(c => c.classList.remove('active'));
+        const socket = getSocket();
+        if (socket) {
+            socket.emit('video_update', { url: null, type: null });
+        }
+    };
+
+    mediaSearch.oninput = renderContent;
+
+    // Upload & URL Management
+    const fileInput = document.getElementById('media-file-input');
+    fileInput.onchange = (e) => {
+        if (e.target.files.length > 0) {
+            const formData = new FormData();
+            formData.append('file', e.target.files[0]);
+            formData.append('category', currentFolder === 'all' ? 'general' : currentFolder);
+            fetch('/api/videos/upload', { method: 'POST', body: formData })
+                .then(res => res.json()).then(() => loadMedia());
+        }
+    };
+
+    window.transformUrl = (url) => {
+        if (!url) return url;
+        let tUrl = url.trim();
+        // Enforce protocol (default to http for localhost/IP, https otherwise)
+        if (!/^https?:\/\//i.test(tUrl)) {
+            const isLocal = /^(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/i.test(tUrl);
+            tUrl = (isLocal ? 'http://' : 'https://') + tUrl;
+        }
+
+        // YouTube
+        const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/;
+        const ytMatch = tUrl.match(ytRegex);
+        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`;
+
+        // Vimeo
+        const vimeoRegex = /(?:https?:\/\/)?(?:www\.)?(?:vimeo\.com\/)(\d+)/;
+        const vimeoMatch = tUrl.match(vimeoRegex);
+        if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=1&background=0`;
+
+        // Twitch
+        const twitchRegex = /(?:https?:\/\/)?(?:www\.)?(?:twitch\.tv\/)([a-zA-Z0-9_]+)/;
+        const twitchMatch = tUrl.match(twitchRegex);
+        if (twitchMatch) {
+            const parent = window.location.hostname;
+            return `https://player.twitch.tv/?channel=${twitchMatch[1]}&parent=${parent || 'localhost'}&autoplay=true&muted=true`;
+        }
+        
+        // Facebook Video
+        if (tUrl.includes('facebook.com') && (tUrl.includes('/videos/') || tUrl.includes('/watch/'))) {
+            return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(tUrl)}&show_text=0&width=560`;
+        }
+
+        return tUrl;
+    };
+
+    document.getElementById('btn-add-url').onclick = () => {
+        const bodyHtml = `
+            <div class="modal-form-group">
+                <label>Name</label>
+                <input type="text" id="bs-name" placeholder="e.g. YouTube Live">
+            </div>
+            <div class="modal-form-group">
+                <label>URL</label>
+                <input type="text" id="bs-url" placeholder="https://...">
+            </div>
+            <div class="modal-form-row">
+                <div class="modal-form-group">
+                    <label>Width</label>
+                    <input type="text" id="bs-width" value="100%">
+                </div>
+                <div class="modal-form-group">
+                    <label>Height</label>
+                    <input type="text" id="bs-height" value="100%">
+                </div>
+            </div>
+            <div class="modal-form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="bs-proxy" style="width: auto;">
+                <label style="margin: 0;">Use Proxy (For iframe-blocked sites)</label>
+            </div>
+            <div class="modal-form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="bs-interact" style="width: auto;">
+                <label style="margin: 0;">Allow Interaction</label>
+            </div>
+            <div class="modal-form-group">
+                <label>Custom CSS (Applied only via Proxy)</label>
+                <textarea id="bs-css" rows="3"></textarea>
+            </div>
+        `;
+
+        window.openUniversalModal("Add Browser Source", bodyHtml, "Add Source", () => {
+            const name = document.getElementById('bs-name').value;
+            let url = document.getElementById('bs-url').value;
+            const width = document.getElementById('bs-width').value;
+            const height = document.getElementById('bs-height').value;
+            const css = document.getElementById('bs-css').value;
+            const useProxy = document.getElementById('bs-proxy').checked;
+            const interact = document.getElementById('bs-interact').checked;
+
+            if (!name || !url) return;
+            url = window.transformUrl(url);
+            if (useProxy) {
+                url = `${window.location.origin}/api/videos/proxy?url=${encodeURIComponent(url)}`;
+            }
+
+            fetch('/api/videos/add-browser-source', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    name, 
+                    url: JSON.stringify({ url, width, height, interact, css }), 
+                    category: currentFolder === 'all' ? 'livefeed' : currentFolder 
+                })
+            }).then(() => {
+                loadMedia();
+                closeUniversalModal();
+            });
+        });
+    };
+
+    window.deleteItem = (path) => {
+        if (confirm('Delete media source permanently?')) {
+            fetch('/api/videos/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: path })
+            }).then(() => loadMedia());
+        }
+    };
+
+    loadMedia();
+});
+</script>
+{% endblock %}

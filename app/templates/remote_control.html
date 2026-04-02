@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PowerPoint Remote - SongLyrics Projection</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.js"></script>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        .header {
+            padding: 15px 15px 10px 15px;
+            text-align: center;
+            background: #111;
+            border-bottom: 2px solid #333;
+            font-size: 1.5rem;
+            font-weight: bold;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            position: absolute;
+            right: 15px;
+            bottom: 5px;
+            font-size: 0.8rem;
+            color: #aaa;
+            text-decoration: none;
+        }
+
+        #conn-status {
+            position: absolute;
+            right: 15px;
+            top: 25px;
+            font-size: 0.8rem;
+            color: #f39c12;
+        }
+
+        .controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            border-radius: 20px;
+            border: none;
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            user-select: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s, opacity 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        .btn-prev {
+            background: #444;
+        }
+
+        .btn-next {
+            background: #28a745;
+        }
+
+        .btn-pointer-sm {
+            background: #444;
+            font-size: 0.65rem;
+            border-radius: 10px;
+            padding: 5px 10px;
+            border: 1px solid #444;
+            color: #fff;
+            min-width: 90px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #222;
+            padding: 30px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 300px;
+            border: 1px solid #444;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .mode-btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .mode-pick {
+            flex: 1;
+            padding: 15px;
+            background: #333;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #fff;
+            border: 2px solid transparent;
+        }
+
+        .mode-pick.active {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.2);
+        }
+
+        .modal-sens {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        .modal-sens input { width: 100%; accent-color: #28a745; }
+
+
+        .hint {
+
+
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0px; position: relative;">
+            <span id="page-indicator" style="font-size:0.9rem; font-weight:normal; color:#ddd;">Loading...</span>
+            <span style="position: absolute; left: 50%; transform: translateX(-50%); font-weight: bold; font-size: 1rem;">Remote</span>
+            <span id="conn-status">Connecting...</span>
+        </div>
+
+        <div style="position: absolute; left: 15px; top: 40px; z-index: 10;">
+            <button class="btn-pointer-sm" onclick="togglePointer()" id="btnPointer" disabled style="opacity: 0.3;">POINTER OFF</button>
+        </div>
+
+        <div id="presentation-title"
+            style="font-size: 0.9rem; color: #4fc3f7; margin-top: 0px; font-weight: normal; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 90%; margin-left: auto; margin-right: auto;">
+            Waiting for presentation...</div>
+
+        <div id="control-indicator" style="font-size: 0.8rem; margin-top: 5px; color: #ff5252; font-weight: normal;">
+            Control: DISABLED</div>
+        <a href="{{ url_for('powerpoint.remote_logout') }}" class="logout-btn">Logout</a>
+    </div>
+    <div class="controls">
+        <button class="btn btn-next" onclick="sendCommand('next')" id="btnNext" disabled style="opacity: 0.3;">NEXT
+            ▶</button>
+        <button class="btn btn-prev" onclick="sendCommand('prev')" id="btnPrev" disabled style="opacity: 0.3;">◀
+            PREV</button>
+    </div>
+
+
+    <div class="modal-overlay" id="pointerModal">
+        <div class="modal-content">
+            <h2 style="margin:0; font-size: 1.2rem;">Pointer Settings</h2>
+            <div class="mode-btn-group">
+                <div class="mode-pick" id="pickGyro" onclick="setPointerMode('gyro')">GYRO</div>
+                <div class="mode-pick" id="pickTouch" onclick="setPointerMode('touch')">TOUCH</div>
+            </div>
+            <div class="modal-sens">
+                <span>Sensitivity</span>
+                <input type="range" id="pointerSens" min="0.5" max="3" step="0.1" value="1.0">
+            </div>
+            <button class="btn-next" style="font-size: 1rem; padding: 10px; margin-top:10px;" onclick="closePointerModal()">OK, Turn On</button>
+        </div>
+    </div>
+
+    <div class="hint">Keep your screen awake and just use the buttons.</div>
+
+    <script>
+        const socket = io({ transports: ['websocket', 'polling'] });
+        const connStatus = document.getElementById('conn-status');
+        const pageIndicator = document.getElementById('page-indicator');
+        const controlIndicator = document.getElementById('control-indicator');
+        const btnNext = document.getElementById('btnNext');
+        const btnPrev = document.getElementById('btnPrev');
+        let isRemoteEnabled = false;
+
+        socket.on('connect', () => {
+            connStatus.innerText = '● Connected';
+            connStatus.style.color = '#28a745';
+            socket.emit('request_powerpoint_state');
+        });
+        socket.on('disconnect', () => {
+            connStatus.innerText = '● Disconnected';
+            connStatus.style.color = '#dc3545';
+            pageIndicator.innerText = 'Offline';
+            setRemoteEnabled(false);
+        });
+
+        function setRemoteEnabled(enabled) {
+            isRemoteEnabled = enabled;
+            if (enabled) {
+                controlIndicator.innerText = 'Control: ENABLED';
+                controlIndicator.style.color = '#28a745';
+                btnNext.disabled = false;
+                btnNext.style.opacity = '1';
+                btnPrev.disabled = false;
+                btnPrev.style.opacity = '1';
+                document.getElementById('btnPointer').disabled = false;
+                document.getElementById('btnPointer').style.opacity = '1';
+            } else {
+                controlIndicator.innerText = 'Control: DISABLED';
+                controlIndicator.style.color = '#ff5252';
+                btnNext.disabled = true;
+                btnNext.style.opacity = '0.3';
+                btnPrev.disabled = true;
+                btnPrev.style.opacity = '0.3';
+                document.getElementById('btnPointer').disabled = true;
+                document.getElementById('btnPointer').style.opacity = '0.3';
+                if (isPointerActive) togglePointer(); // Turn off if disabled
+            }
+        }
+
+
+        socket.on('powerpoint_state_update_relay', (data) => {
+            if (data && data.total) {
+                pageIndicator.innerText = `Slide ${data.current} / ${data.total}`;
+            }
+            if (data && data.title) {
+                document.getElementById('presentation-title').innerText = data.title !== '-- Choose Presentation --' ? data.title : 'No Presentation Selected';
+            }
+            if (data && typeof data.remote_enabled !== 'undefined') {
+                setRemoteEnabled(data.remote_enabled);
+            }
+        });
+
+        function sendCommand(cmd) {
+            if (!isRemoteEnabled) return;
+            socket.emit('powerpoint_remote_cmd', { command: cmd });
+            if (navigator.vibrate) navigator.vibrate(50);
+        }
+
+        // Support for bluetooth presentation clickers (which act as keyboards sending arrow keys)
+        document.addEventListener('keydown', function (e) {
+            if (!isRemoteEnabled) return;
+            const nextKeys = ['ArrowRight', 'ArrowDown', 'PageDown', ' '];
+            const prevKeys = ['ArrowLeft', 'ArrowUp', 'PageUp'];
+
+            if (nextKeys.includes(e.key)) {
+                e.preventDefault(); sendCommand('next');
+            } else if (prevKeys.includes(e.key)) {
+                e.preventDefault(); sendCommand('prev');
+            }
+        });
+
+        // Request wake lock when user taps a button (prevents screen from turning off)
+        document.body.addEventListener('click', async () => {
+            if ('wakeLock' in navigator) {
+                try {
+                    await navigator.wakeLock.request('screen');
+                } catch (err) {
+                    console.error("Wake Lock denied", err);
+                }
+            }
+        }, { once: true });
+
+        // --- Pointer Logic ---
+        let isPointerActive = false;
+        let pointerMode = localStorage.getItem('pointer_mode') || 'gyro'; // 'gyro' or 'touch'
+        let smoothX = 50;
+        let smoothY = 50;
+        let pSensitivity = 1.0;
+        let lastSent = 0;
+        const pointerBtn = document.getElementById('btnPointer');
+        const pointerModal = document.getElementById('pointerModal');
+        const sensInput = document.getElementById('pointerSens');
+
+        sensInput.addEventListener('input', (e) => {
+            pSensitivity = parseFloat(e.target.value);
+            localStorage.setItem('pointer_sensitivity', pSensitivity);
+        });
+
+        // Load saved sensitivity
+        const savedSens = localStorage.getItem('pointer_sensitivity');
+        if (savedSens) {
+            pSensitivity = parseFloat(savedSens);
+            sensInput.value = savedSens;
+        }
+
+        function setPointerMode(mode) {
+            pointerMode = mode;
+            localStorage.setItem('pointer_mode', mode);
+            
+            // Visual Update in Modal
+            const gyro = document.getElementById('pickGyro');
+            const touch = document.getElementById('pickTouch');
+            
+            gyro.classList.toggle('active', mode === 'gyro');
+            touch.classList.toggle('active', mode === 'touch');
+        }
+        
+        // Initial mode set for modal
+        setPointerMode(pointerMode);
+
+        function togglePointer() {
+            if (!isRemoteEnabled) return;
+            
+            if (isPointerActive) {
+                // Turn OFF
+                isPointerActive = false;
+                pointerBtn.style.background = '#444';
+                pointerBtn.style.borderColor = '#444';
+                pointerBtn.innerText = 'POINTER OFF';
+                window.removeEventListener('deviceorientation', handleOrientation);
+                socket.emit('powerpoint_pointer_data', { active: false });
+            } else {
+                // Show Settings Modal
+                pointerModal.style.display = 'flex';
+            }
+            if (navigator.vibrate) navigator.vibrate(50);
+        }
+
+        function closePointerModal() {
+            pointerModal.style.display = 'none';
+            isPointerActive = true;
+            pointerBtn.style.background = '#e74c3c';
+            pointerBtn.style.borderColor = '#e74c3c';
+            pointerBtn.innerText = 'POINTER ON';
+
+            if (pointerMode === 'gyro') {
+                if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    DeviceOrientationEvent.requestPermission()
+                        .then(permissionState => {
+                            if (permissionState === 'granted') {
+                                window.addEventListener('deviceorientation', handleOrientation);
+                            } else {
+                                alert("Orientation permission denied. Gyro pointer will not work.");
+                                setPointerMode('touch');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            setPointerMode('touch');
+                        });
+                } else if (window.DeviceOrientationEvent) {
+                    window.addEventListener('deviceorientation', handleOrientation);
+                }
+            }
+        }
+
+        function sendPointerData() {
+            const now = Date.now();
+            if (now - lastSent > 33) { // 30fps
+                lastSent = now;
+                socket.emit('powerpoint_pointer_data', { active: true, x: smoothX, y: smoothY });
+            }
+        }
+
+        function handleOrientation(event) {
+            if (!isPointerActive || pointerMode !== 'gyro') return;
+
+            const baseDegreeRange = 60; 
+            const degreeRange = baseDegreeRange / pSensitivity;
+            
+            let targetY = (event.beta - (60 - degreeRange/2)) / degreeRange * 100;
+            let targetX = (event.gamma + (degreeRange/2)) / degreeRange * 100;
+
+            targetX = Math.max(0, Math.min(100, targetX));
+            targetY = Math.max(0, Math.min(100, targetY));
+
+            const K = 0.15; 
+            smoothX = smoothX + (targetX - smoothX) * K;
+            smoothY = smoothY + (targetY - smoothY) * K;
+
+            sendPointerData();
+        }
+
+        // --- Touch Pointer Control ---
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            if (!isPointerActive || pointerMode !== 'touch') return;
+            const touch = e.touches[0];
+            lastTouchX = touch.clientX;
+            lastTouchY = touch.clientY;
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isPointerActive || pointerMode !== 'touch') return;
+            
+            const touch = e.touches[0];
+            const dx = touch.clientX - lastTouchX;
+            const dy = touch.clientY - lastTouchY;
+
+            const sensFactor = pSensitivity * 0.15;
+
+            smoothX = Math.max(0, Math.min(100, smoothX + (dx * sensFactor)));
+            smoothY = Math.max(0, Math.min(100, smoothY + (dy * sensFactor)));
+
+            lastTouchX = touch.clientX;
+            lastTouchY = touch.clientY;
+
+            if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+                e.preventDefault();
+            }
+            
+            sendPointerData();
+        }, { passive: false });
+
+    </script>
+
+</body>
+
+</html>

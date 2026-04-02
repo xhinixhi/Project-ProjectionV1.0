@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block title %}Announcements - Editor{% endblock %}
+
+{% block content %}
+<div class="editor-container">
+    <div class="panel-header">
+        <div class="breadcrumb">
+            <a href="{{ url_for('editor.index') }}">Editor Dashboard</a> / <span>Announcements</span>
+        </div>
+        <h1>Announcements</h1>
+        <div class="actions">
+            <input type="text" id="announcement-search" placeholder="Search announcements..." class="search-input">
+            <button onclick="location.href='{{ url_for('announcements.add_announcement', next='editor.announcements') }}'" class="btn-primary">+ Add New Announcement</button>
+        </div>
+    </div>
+
+    <div class="editor-content scrollable">
+        <table class="editor-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Header</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="announcement-list-body">
+                {% for a in announcements %}
+                <tr>
+                    <td><strong>{{ a.title }}</strong></td>
+                    <td>{{ a.header or '-' }}</td>
+                    <td class="text-right">
+                        <button onclick="location.href='{{ url_for('announcements.add_announcement', id=a.id, next='editor.announcements') }}'" class="btn-small">Edit</button>
+                        <button onclick="deleteAnnouncement({{ a.id }})" class="btn-small btn-danger">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.editor-container { padding: 30px; height: 100%; display: flex; flex-direction: column; }
+.breadcrumb { margin-bottom: 10px; font-size: 0.9rem; color: #888; }
+.breadcrumb a { color: var(--accent, #64ffda); text-decoration: none; }
+.panel-header h1 { font-size: 2rem; margin-bottom: 20px; }
+.actions { display: flex; gap: 15px; align-items: center; }
+.search-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 8px; color: white; }
+.editor-table { width: 100%; border-collapse: collapse; }
+.editor-table th { text-align: left; padding: 12px 15px; border-bottom: 2px solid rgba(255,255,255,0.1); color: #888; font-weight: 600; }
+.editor-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.text-right { text-align: right; }
+.btn-small { padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; }
+.btn-small:hover { background: rgba(255,255,255,0.2); }
+.btn-danger { background: rgba(255, 68, 68, 0.2); margin-left: 5px; }
+.btn-danger:hover { background: rgba(255, 68, 68, 0.4); }
+</style>
+
+<script>
+function deleteAnnouncement(id) {
+    if (confirm('Are you sure you want to delete this announcement?')) {
+        fetch(`/announcements/delete/${id}`, { method: 'POST' })
+        .then(() => location.reload());
+    }
+}
+
+document.getElementById('announcement-search').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#announcement-list-body tr');
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

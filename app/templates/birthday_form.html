@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ 'Edit' if b else 'Add' }} Birthday - SongLyrics Projection{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>{{ 'Edit' if b else 'Add New' }} Birthday</h1>
+    <form action="{{ url_for('birthdays.add_birthday', id=b.id if b else None, next=request.args.get('next')) }}" method="POST">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" value="{{ b.name if b else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="birth_date">Birth Date</label>
+            <input type="date" id="birth_date" name="birth_date"
+                value="{{ '%04d-%02d-%02d'|format(b.birth_year or 2000, b.birth_month, b.birth_day) if b else '' }}"
+                required>
+            <small>Select year, month, and day. Year will be hidden from output.</small>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Save Birthday</button>
+            {% if request.args.get('next') %}
+            <a href="{{ url_for(request.args.get('next')) }}" class="btn-secondary">Cancel</a>
+            {% else %}
+            <a href="{{ url_for('birthdays.index') }}" class="btn-secondary">Cancel</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('keydown', function (e) {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+            e.preventDefault();
+            document.querySelector('form').submit();
+        }
+        if (e.code === 'Escape') {
+            const cancelBtn = document.querySelector('.btn-secondary');
+            if (cancelBtn) {
+                window.location.href = cancelBtn.href;
+            } else {
+                window.location.href = "{{ url_for('birthdays.index') }}";
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block title %}Live 2 - Editor{% endblock %}
+
+{% block content %}
+<div class="editor-container">
+    <div class="panel-header">
+        <div class="breadcrumb">
+            <a href="{{ url_for('editor.index') }}">Editor Dashboard</a> / <span>Live 2</span>
+        </div>
+        <h1>Live 2</h1>
+        <div class="actions">
+            <input type="text" id="live2-search" placeholder="Search live items..." class="search-input">
+            <button onclick="location.href='{{ url_for('live2.add_live2', next='editor.live2') }}'" class="btn-primary">+ Add New Live Item</button>
+        </div>
+    </div>
+
+    <div class="editor-content scrollable">
+        <table class="editor-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="live2-list-body">
+                {% for l in lives %}
+                <tr>
+                    <td><strong>{{ l.title }}</strong></td>
+                    <td>{{ l.author or '-' }}</td>
+                    <td class="text-right">
+                        <button onclick="location.href='{{ url_for('live2.add_live2', live2_id=l.id, next='editor.live2') }}'" class="btn-small">Edit</button>
+                        <button onclick="deleteLive2({{ l.id }})" class="btn-small btn-danger">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.editor-container { padding: 30px; height: 100%; display: flex; flex-direction: column; }
+.breadcrumb { margin-bottom: 10px; font-size: 0.9rem; color: #888; }
+.breadcrumb a { color: var(--accent, #64ffda); text-decoration: none; }
+.panel-header h1 { font-size: 2rem; margin-bottom: 20px; }
+.actions { display: flex; gap: 15px; align-items: center; }
+.search-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 8px; color: white; }
+.editor-table { width: 100%; border-collapse: collapse; }
+.editor-table th { text-align: left; padding: 12px 15px; border-bottom: 2px solid rgba(255,255,255,0.1); color: #888; font-weight: 600; }
+.editor-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.text-right { text-align: right; }
+.btn-small { padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; }
+.btn-small:hover { background: rgba(255,255,255,0.2); }
+.btn-danger { background: rgba(255, 68, 68, 0.2); margin-left: 5px; }
+.btn-danger:hover { background: rgba(255, 68, 68, 0.4); }
+</style>
+
+<script>
+function deleteLive2(id) {
+    if (confirm('Are you sure you want to delete this live item?')) {
+        fetch(`/live2/delete/${id}`, { method: 'POST' })
+        .then(() => location.reload());
+    }
+}
+
+document.getElementById('live2-search').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#live2-list-body tr');
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

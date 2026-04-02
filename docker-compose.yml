@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    container_name: songlyrics-projection
+    restart: unless-stopped
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./app.db:/app/app.db
+      - ./migrations:/app/migrations
+      - ./app/static/uploads/presentations:/app/app/static/uploads/presentations
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=your-secret-key-here # Change this to a secure random string

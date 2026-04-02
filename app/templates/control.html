@@ -1,0 +1,277 @@
+{% extends "layout.html" %}
+
+{% block title %}Control Panel - SongLyrics Projection{% endblock %}
+{% block body_class %}control-page{% endblock %}
+
+{% block content %}
+<div class="control-container">
+    <!-- LEFT PANEL: Main Navigation & Content -->
+    <div class="panel library-panel" id="library-panel">
+        <div id="songs-tab" class="tab-content">
+            <div class="panel-header">
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;" class="header-content-wrapper">
+                    <h2 style="margin: 0; flex-shrink: 0;">Song Library</h2>
+                    <div class="panel-controls"
+                        style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+                        <div class="admin-toggle-wrapper"
+                            style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 20px;">
+                            <input type="checkbox" id="manage-songs-toggle"
+                                style="width: 14px; height: 14px; cursor: pointer;">
+                            <label for="manage-songs-toggle"
+                                style="font-size: 0.65rem; color: #888; font-weight: 800; cursor: pointer; user-select: none;">ADMIN</label>
+                        </div>
+                        <button id="btn-minimize-library" class="btn-panel-toggle-new" title="Minimize Library (Alt+L)"
+                            style="background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-muted); width: 26px; height: 26px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">◀</button>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="song-search" placeholder="Search Songs...">
+                </div>
+                <button id="btn-add-song" class="btn-primary"
+                    onclick="window.location.href='{{ url_for('songs.add_song') }}';">+</button>
+            </div>
+            <div class="panel-content scrollable">
+                <ul id="song-list" class="list-group">
+                    <!-- Songs will be loaded here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MIDDLE PANEL: Service Lineup -->
+    <div class="panel lineup-panel">
+        <div class="panel-header">
+            <h2 id="active-service-name">Service Lineup</h2>
+        </div>
+        <div class="panel-content scrollable">
+            <ul id="service-lineup" class="list-group sortable">
+                <!-- Service items will be loaded here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL: Song Preview + Section Buttons -->
+    <div class="panel preview-panel">
+        <div class="panel-header">
+            <div class="header-top">
+                <h2 id="current-song-title">Select a Song</h2>
+                <button id="btn-settings" class="btn-small">⚙ Settings</button>
+            </div>
+            <div id="settings-panel" class="settings-panel hidden">
+                <h3>Controller Theme</h3>
+                <select id="theme-select">
+                    <option value="default">Default Dark</option>
+                    <option value="midnight">Midnight Blue</option>
+                    <option value="slate">Slate Grey</option>
+                </select>
+
+                <h3>Output Settings</h3>
+                <div class="setting-group">
+                    <label>Font Family</label>
+                    <select id="font-family">
+                        <optgroup label="Sans Serif">
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </optgroup>
+                        <optgroup label="Serif">
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="'Courier New', monospace">Courier</option>
+                            <option value="cursive">Cursive</option>
+                            <option value="Impact, fantasy">Impact</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="font-size-slider" min="20" max="250" value="90" style="flex: 1;">
+                        <input type="number" id="font-size" value="90" min="20" max="250" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Embed Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="embed-size-slider" min="50" max="10000" value="500" style="flex: 1;">
+                        <input type="number" id="embed-size" value="500" min="50" max="10000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Color</label>
+                    <input type="color" id="font-color" value="#ffffff">
+                </div>
+                <div class="setting-group">
+                    <label>Shadow Intensity</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="shadow-intensity" min="0" max="50" value="20" style="flex: 1;">
+                        <input type="number" id="shadow-intensity-num" min="0" max="50" value="20" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="border-size" min="0" max="20" value="0" style="flex: 1;" oninput="document.getElementById('border-size-num').value = this.value">
+                        <input type="number" id="border-size-num" value="0" min="0" max="20" style="width: 60px;" oninput="document.getElementById('border-size').value = this.value">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Color</label>
+                    <input type="color" id="border-color" value="#000000">
+                </div>
+                <div class="setting-group">
+                    <label>Text Case</label>
+                    <select id="text-transform">
+                        <option value="none">Normal</option>
+                        <option value="uppercase">ALL CAPS</option>
+                        <option value="capitalize">Capitalize Each Word</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Text Alignment</label>
+                    <select id="text-align">
+                        <option value="left">Left</option>
+                        <option value="center" selected>Center</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Vertical Position</label>
+                    <select id="vertical-align" title="Vertical position of the text on screen">
+                        <option value="center" selected>Center (Default)</option>
+                        <option value="flex-start">Top</option>
+                        <option value="flex-end">Bottom (Lower Third)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>X Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="x-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="x-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Y Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="y-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="y-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group" style="display: flex; gap: 15px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" id="font-bold">
+                        Bold</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="font-italic"> Italic</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="font-border"> Border</label>
+                </div>
+                <h3 style="margin-top:20px;">Emphasized Tag (&lt;emp&gt;) Styles</h3>
+                <div class="setting-group" style="margin-top:-5px; font-size: 0.8rem; color: #888;">
+                    Wrap words in &lt;emp&gt;word&lt;/emp&gt;
+                </div>
+                <div class="setting-group">
+                    <label>Font Family</label>
+                    <select id="emp-font-family">
+                        <option value="inherit">Inherit Parent</option>
+                        <optgroup label="Sans Serif">
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </optgroup>
+                        <optgroup label="Serif">
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="emp-font-size-slider" min="20" max="250" value="90" style="flex: 1;">
+                        <input type="number" id="emp-font-size" value="90" min="20" max="250" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Color</label>
+                    <input type="color" id="emp-font-color" value="#ffff00">
+                </div>
+                <div class="setting-group">
+                    <label>Shadow Intensity</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="emp-shadow-intensity" min="0" max="50" value="20" style="flex: 1;">
+                        <input type="number" id="emp-shadow-intensity-num" min="0" max="50" value="20"
+                            style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="emp-border-size" min="0" max="20" value="0" style="flex: 1;" oninput="document.getElementById('emp-border-size-num').value = this.value">
+                        <input type="number" id="emp-border-size-num" value="0" min="0" max="20" style="width: 60px;" oninput="document.getElementById('emp-border-size').value = this.value">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Color</label>
+                    <input type="color" id="emp-border-color" value="#000000">
+                </div>
+                <div class="setting-group">
+                    <label>Text Case</label>
+                    <select id="emp-text-transform">
+                        <option value="none">Normal</option>
+                        <option value="uppercase">ALL CAPS</option>
+                        <option value="capitalize">Capitalize Each Word</option>
+                    </select>
+                </div>
+                <div class="setting-group" style="display: flex; gap: 15px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="emp-font-bold" checked>
+                        Bold</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="emp-font-italic"> Italic</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="emp-font-border"> Border</label>
+                </div>
+                <h3>Transition Settings</h3>
+                <div class="setting-group">
+                    <label>Style</label>
+                    <select id="transition-style">
+                        <option value="fade">Fade</option>
+                        <option value="slide-up">Slide Up</option>
+                        <option value="slide-down">Slide Down</option>
+                        <option value="zoom">Zoom</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Speed (s)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="transition-speed-slider" min="0.1" max="5.0" step="0.1" value="0.5"
+                            style="flex: 1;">
+                        <input type="number" id="transition-speed" value="0.5" min="0.1" max="5.0" step="0.1"
+                            style="width: 60px;">
+                    </div>
+                </div>
+                <div class="settings-actions" style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button id="btn-save-settings" class="btn-primary" style="flex: 1;">Save Global</button>
+                    <button id="btn-pin-style" class="btn-secondary" style="flex: 1;"
+                        title="Save current look to active Song/Live">📌 Pin to Item</button>
+                </div>
+            </div>
+            <div id="section-buttons" class="button-grid">
+                <!-- Section buttons will be loaded here -->
+            </div>
+        </div>
+        <div class="panel-content scrollable" id="song-preview-content">
+            <!-- Full lyrics with sections will be loaded here -->
+        </div>
+    </div>
+</div>
+{% endblock %}

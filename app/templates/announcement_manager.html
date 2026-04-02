@@ -1,0 +1,267 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage Announcements - SongLyrics Projection{% endblock %}
+{% block body_class %}manager-page{% endblock %}
+
+{% block content %}
+<div class="manager-container">
+    <div class="panel-header">
+        <h1>Announcement Management</h1>
+        <div class="birthday-actions">
+            <button onclick="location.href='/announcements/add'" class="btn-huge-action">+ Add New Announcement</button>
+            <button id="btn-settings-announcement" class="btn-secondary"
+                onclick="document.getElementById('announcement-settings-panel').classList.toggle('hidden')">⚙
+                Styling</button>
+        </div>
+    </div>
+
+    <div id="announcement-settings-panel" class="settings-panel hidden" style="margin: 0 20px 20px 20px;">
+        <div class="form-group.row" style="display: flex; gap: 20px;">
+            <div class="col" style="flex: 1;">
+                <h3>Header Styling</h3>
+                <div class="setting-group">
+                    <label>Font Family</label>
+                    <select id="ah-font-family">
+                        <optgroup label="Sans Serif">
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </optgroup>
+                        <optgroup label="Serif">
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="'Courier New', monospace">Courier</option>
+                            <option value="cursive">Cursive</option>
+                            <option value="Impact, fantasy">Impact</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ah-font-size-slider" min="20" max="250" value="150" style="flex: 1;">
+                        <input type="number" id="ah-font-size" value="150" min="20" max="250" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>X Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ah-x-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="ah-x-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Y Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ah-y-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="ah-y-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Color</label>
+                    <input type="color" id="ah-font-color" value="#2196f3">
+                </div>
+                <div class="setting-group">
+                    <label>Shadow Intensity</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ah-shadow-intensity" min="0" max="50" value="20" style="flex: 1;">
+                        <input type="number" id="ah-shadow-intensity-num" min="0" max="50" value="20"
+                            style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ah-border-size" min="0" max="20" value="0" style="flex: 1;" oninput="document.getElementById('ah-border-size-num').value = this.value">
+                        <input type="number" id="ah-border-size-num" value="0" min="0" max="20" style="width: 60px;" oninput="document.getElementById('ah-border-size').value = this.value">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Color</label>
+                    <input type="color" id="ah-border-color" value="#000000">
+                </div>
+                <div class="setting-group">
+                    <label>Text Case</label>
+                    <select id="ah-text-transform">
+                        <option value="none">Normal</option>
+                        <option value="uppercase" selected>ALL CAPS</option>
+                        <option value="capitalize">Capitalize</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Text Alignment</label>
+                    <select id="ah-text-align">
+                        <option value="left">Left</option>
+                        <option value="center" selected>Center</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Vertical Position</label>
+                    <select id="ah-vertical-align" title="Vertical position of the title on screen">
+                        <option value="center" selected>Center (Default)</option>
+                        <option value="flex-start">Top</option>
+                        <option value="flex-end">Bottom (Lower Third)</option>
+                    </select>
+                </div>
+                <div class="setting-group" style="display: flex; gap: 15px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="ah-font-bold"> Bold</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="ah-font-italic"> Italic</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="ah-font-border"> Border</label>
+                </div>
+            </div>
+            <div class="col" style="flex: 1;">
+                <h3>Content Styling</h3>
+                <div class="setting-group">
+                    <label>Font Family</label>
+                    <select id="ac-font-family">
+                        <optgroup label="Sans Serif">
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </optgroup>
+                        <optgroup label="Serif">
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="'Courier New', monospace">Courier</option>
+                            <option value="cursive">Cursive</option>
+                            <option value="Impact, fantasy">Impact</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ac-font-size-slider" min="20" max="250" value="80" style="flex: 1;">
+                        <input type="number" id="ac-font-size" value="80" min="20" max="250" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Embed Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ac-embed-size-slider" min="50" max="10000" value="500" style="flex: 1;">
+                        <input type="number" id="ac-embed-size" value="500" min="50" max="10000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>X Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ac-x-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="ac-x-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Y Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ac-y-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="ac-y-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Color</label>
+                    <input type="color" id="ac-font-color" value="#ffffff">
+                </div>
+                <div class="setting-group">
+                    <label>Shadow Intensity</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ac-shadow-intensity" min="0" max="50" value="20" style="flex: 1;">
+                        <input type="number" id="ac-shadow-intensity-num" min="0" max="50" value="20"
+                            style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="ac-border-size" min="0" max="20" value="0" style="flex: 1;" oninput="document.getElementById('ac-border-size-num').value = this.value">
+                        <input type="number" id="ac-border-size-num" value="0" min="0" max="20" style="width: 60px;" oninput="document.getElementById('ac-border-size').value = this.value">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Color</label>
+                    <input type="color" id="ac-border-color" value="#000000">
+                </div>
+                <div class="setting-group">
+                    <label>Text Case</label>
+                    <select id="ac-text-transform">
+                        <option value="none" selected>Normal</option>
+                        <option value="uppercase">ALL CAPS</option>
+                        <option value="capitalize">Capitalize</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Text Alignment</label>
+                    <select id="ac-text-align">
+                        <option value="left" selected>Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Vertical Position</label>
+                    <select id="ac-vertical-align" title="Vertical position of the text on screen">
+                        <option value="center" selected>Center (Default)</option>
+                        <option value="flex-start">Top</option>
+                        <option value="flex-end">Bottom (Lower Third)</option>
+                    </select>
+                </div>
+                <div class="setting-group" style="display: flex; gap: 15px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="ac-font-bold">
+                        Bold</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="ac-font-italic">
+                        Italic</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="ac-font-border">
+                        Border</label>
+                </div>
+            </div>
+        </div>
+        <div class="settings-actions" style="margin-top: 15px; display: flex; gap: 10px;">
+            <button id="btn-save-announcement-settings" class="btn-primary" style="flex: 1;">Save Global Styles</button>
+            <button id="btn-pin-announcement-style" class="btn-secondary" style="flex: 1;"
+                onclick="window.pinStyleToCurrentItem()">📌 Save to This Announcement</button>
+        </div>
+    </div>
+
+    <div class="manager-content scrollable">
+
+
+        <div class="manager-sections">
+            <section class="all-section">
+                <h2>All Announcements</h2>
+                <div class="search-box">
+                    <input type="text" id="announcement-search" placeholder="Search Announcements...">
+                </div>
+                <ul id="announcement-list" class="list-group database-list announcement-grid sortable">
+                    <!-- Announcements here -->
+                </ul>
+            </section>
+
+            <section class="weekly-section preview-pane">
+                <h2>Preview</h2>
+                <div class="output-control">
+                    <button id="btn-project-announcement" class="btn-project hidden">🚀 Show Announcements</button>
+                </div>
+                <div id="announcement-preview-content" class="preview-content-box">
+                    <p class="placeholder-text">Select an announcement to preview...</p>
+                </div>
+            </section>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

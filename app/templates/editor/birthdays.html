@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+
+{% block title %}Birthdays - Editor{% endblock %}
+
+{% block content %}
+<div class="editor-container">
+    <div class="panel-header">
+        <div class="breadcrumb">
+            <a href="{{ url_for('editor.index') }}">Editor Dashboard</a> / <span>Birthdays</span>
+        </div>
+        <h1>Birthdays</h1>
+        <div class="actions">
+            <input type="text" id="birthday-search" placeholder="Search names..." class="search-input">
+            <button onclick="location.href='{{ url_for('birthdays.add_birthday', next='editor.birthdays') }}'" class="btn-primary">+ Add New Birthday</button>
+        </div>
+    </div>
+
+    <div class="editor-content scrollable">
+        <table class="editor-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Present</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="birthday-list-body">
+                {% for b in birthdays %}
+                <tr>
+                    <td><strong>{{ b.name }}</strong></td>
+                    <td>{{ b.birth_month }}/{{ b.birth_day }}</td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" {% if b.is_present %}checked{% endif %} onchange="togglePresent({{ b.id }}, this.checked)">
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                    <td class="text-right">
+                        <button onclick="location.href='{{ url_for('birthdays.add_birthday', id=b.id, next='editor.birthdays') }}'" class="btn-small">Edit</button>
+                        <button onclick="deleteBirthday({{ b.id }})" class="btn-small btn-danger">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+/* Reusing styles from songs.html or defining them in a global editor scope */
+.editor-container {
+    padding: 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.breadcrumb { margin-bottom: 10px; font-size: 0.9rem; color: #888; }
+.breadcrumb a { color: var(--accent, #64ffda); text-decoration: none; }
+.panel-header h1 { font-size: 2rem; margin-bottom: 20px; }
+.actions { display: flex; gap: 15px; align-items: center; }
+.search-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 8px; color: white; }
+.editor-table { width: 100%; border-collapse: collapse; }
+.editor-table th { text-align: left; padding: 12px 15px; border-bottom: 2px solid rgba(255,255,255,0.1); color: #888; font-weight: 600; }
+.editor-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.text-right { text-align: right; }
+.btn-small { padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; }
+.btn-small:hover { background: rgba(255,255,255,0.2); }
+.btn-danger { background: rgba(255, 68, 68, 0.2); margin-left: 5px; }
+.btn-danger:hover { background: rgba(255, 68, 68, 0.4); }
+
+/* Switch styling */
+.switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--accent, #64ffda); }
+input:checked + .slider:before { transform: translateX(20px); }
+</style>
+
+<script>
+function togglePresent(id, isPresent) {
+    fetch(`/birthdays/toggle_present/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_present: isPresent })
+    });
+}
+
+function deleteBirthday(id) {
+    if (confirm('Are you sure you want to delete this celebrant?')) {
+        fetch(`/birthdays/delete/${id}`, { method: 'POST' })
+        .then(() => location.reload());
+    }
+}
+
+document.getElementById('birthday-search').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#birthday-list-body tr');
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

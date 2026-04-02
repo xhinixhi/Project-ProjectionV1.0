@@ -1,0 +1,289 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage Birthdays - SongLyrics Projection{% endblock %}
+{% block body_class %}manager-page{% endblock %}
+
+{% block content %}
+<div class="manager-container">
+    <div class="panel-header">
+        <h1>Birthday Management</h1>
+        <div class="birthday-actions">
+            <div class="input-group">
+                <input type="text" id="birthday-header-input" placeholder="Birthday Celebrants">
+                <button class="btn-primary" onclick="saveBirthdayHeader()">Save Header</button>
+            </div>
+            <button onclick="document.getElementById('csv-upload').click();" class="btn-primary"
+                style="background-color: #4CAF50;">📥 Import CSV</button>
+            <input type="file" id="csv-upload" accept=".csv" style="display:none;" onchange="uploadCSV(this)">
+            <button onclick="location.href='/birthdays/add'" class="btn-huge-action">+ Add New Birthday</button>
+            <button id="btn-settings-birthday" class="btn-secondary"
+                onclick="document.getElementById('birthday-settings-panel').classList.toggle('hidden')">⚙
+                Styling</button>
+        </div>
+    </div>
+
+    <div id="birthday-settings-panel" class="settings-panel hidden" style="margin: 0 20px 20px 20px;">
+        <div class="form-group.row" style="display: flex; gap: 20px;">
+            <div class="col" style="flex: 1;">
+                <h3>Header Styling</h3>
+                <div class="setting-group">
+                    <label>Font Family</label>
+                    <select id="bh-font-family">
+                        <optgroup label="Sans Serif">
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </optgroup>
+                        <optgroup label="Serif">
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="'Courier New', monospace">Courier</option>
+                            <option value="cursive">Cursive</option>
+                            <option value="Impact, fantasy">Impact</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-font-size-slider" min="20" max="250" value="150" style="flex: 1;">
+                        <input type="number" id="bh-font-size" value="150" min="20" max="250" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Color</label>
+                    <input type="color" id="bh-font-color" value="#2196f3">
+                </div>
+                <div class="setting-group">
+                    <label>Shadow Intensity</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-shadow-intensity" min="0" max="50" value="20" style="flex: 1;">
+                        <input type="number" id="bh-shadow-intensity-num" min="0" max="50" value="20"
+                            style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-border-size" min="0" max="20" value="0" style="flex: 1;" oninput="document.getElementById('bh-border-size-num').value = this.value">
+                        <input type="number" id="bh-border-size-num" value="0" min="0" max="20" style="width: 60px;" oninput="document.getElementById('bh-border-size').value = this.value">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Color</label>
+                    <input type="color" id="bh-border-color" value="#000000">
+                </div>
+                <div class="setting-group">
+                    <label>Text Case</label>
+                    <select id="bh-text-transform">
+                        <option value="none">Normal</option>
+                        <option value="uppercase" selected>ALL CAPS</option>
+                        <option value="capitalize">Capitalize</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Text Alignment</label>
+                    <select id="bh-text-align">
+                        <option value="left">Left</option>
+                        <option value="center" selected>Center</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Vertical Position</label>
+                    <select id="bh-vertical-align" title="Vertical position of the header on screen">
+                        <option value="center" selected>Center (Default)</option>
+                        <option value="flex-start">Top</option>
+                        <option value="flex-end">Bottom (Lower Third)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>X Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-x-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="bh-x-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Y Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bh-y-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="bh-y-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group" style="display: flex; gap: 15px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bh-font-bold"> Bold</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bh-font-italic"> Italic</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bh-font-border"> Border</label>
+                </div>
+            </div>
+            <div class="col" style="flex: 1;">
+                <h3>Content Styling</h3>
+                <div class="setting-group">
+                    <label>Font Family</label>
+                    <select id="bc-font-family">
+                        <optgroup label="Sans Serif">
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Oswald', sans-serif">Oswald</option>
+                            <option value="Arial, sans-serif">Arial</option>
+                        </optgroup>
+                        <optgroup label="Serif">
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="'Courier New', monospace">Courier</option>
+                            <option value="cursive">Cursive</option>
+                            <option value="Impact, fantasy">Impact</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Font Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-font-size-slider" min="20" max="250" value="90" style="flex: 1;">
+                        <input type="number" id="bc-font-size" value="90" min="20" max="250" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Color</label>
+                    <input type="color" id="bc-font-color" value="#ffffff">
+                </div>
+                <div class="setting-group">
+                    <label>Shadow Intensity</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-shadow-intensity" min="0" max="50" value="20" style="flex: 1;">
+                        <input type="number" id="bc-shadow-intensity-num" min="0" max="50" value="20"
+                            style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Size (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-border-size" min="0" max="20" value="0" style="flex: 1;" oninput="document.getElementById('bc-border-size-num').value = this.value">
+                        <input type="number" id="bc-border-size-num" value="0" min="0" max="20" style="width: 60px;" oninput="document.getElementById('bc-border-size').value = this.value">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Border Color</label>
+                    <input type="color" id="bc-border-color" value="#000000">
+                </div>
+                <div class="setting-group">
+                    <label>Text Alignment</label>
+                    <select id="bc-text-align">
+                        <option value="left" selected>Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Vertical Position</label>
+                    <select id="bc-vertical-align" title="Vertical position of the text on screen">
+                        <option value="center" selected>Center (Default)</option>
+                        <option value="flex-start">Top</option>
+                        <option value="flex-end">Bottom (Lower Third)</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>X Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-x-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="bc-x-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Y Position (px)</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end;">
+                        <input type="range" id="bc-y-pos-slider" min="-2000" max="2000" value="0" style="flex: 1;">
+                        <input type="number" id="bc-y-pos" value="0" min="-2000" max="2000" style="width: 60px;">
+                    </div>
+                </div>
+                <div class="setting-group" style="display: flex; gap: 15px; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bc-font-bold">
+                        Bold</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bc-font-italic">
+                        Italic</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                            id="bc-font-border">
+                        Border</label>
+                </div>
+            </div>
+        </div>
+        <div class="settings-actions" style="margin-top: 15px;">
+            <button id="btn-save-birthday-settings" class="btn-primary">Save Styles</button>
+        </div>
+    </div>
+
+    <div class="manager-content scrollable">
+        <div class="manager-sections">
+            <section class="weekly-section">
+                <h2>Celebrants for the Week</h2>
+                <div class="output-control">
+                    <button id="btn-show-birthdays" class="btn-project">🚀 Show Birthdays</button>
+                </div>
+                <ul id="weekly-birthday-list" class="list-group card-grid">
+                    <!-- Weekly celebrants here -->
+                </ul>
+            </section>
+
+            <section class="all-section">
+                <h2>All Birthdays Database</h2>
+                <div class="search-box">
+                    <input type="text" id="birthday-search" placeholder="Search names...">
+                </div>
+                <ul id="all-birthday-list" class="list-group database-list">
+                    <!-- All birthdays here -->
+                </ul>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    function uploadCSV(input) {
+        if (!input.files || input.files.length === 0) return;
+        const file = input.files[0];
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/birthdays/import_csv', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert(data.message, "Success");
+                    if (typeof loadBirthdays === 'function') {
+                        loadBirthdays();
+                        loadWeeklyBirthdays();
+                    } else {
+                        window.location.reload();
+                    }
+                } else {
+                    showAlert(data.error || 'Failed to import CSV.', "Error");
+                }
+                input.value = ''; // Reset the input to allow re-uploading the same file
+            })
+            .catch(err => {
+                console.error('CSV Import Error:', err);
+                showAlert('An error occurred while uploading the file.', 'Error');
+                input.value = '';
+            });
+    }
+</script>
+{% endblock %}

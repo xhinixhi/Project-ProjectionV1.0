@@ -7,6 +7,11 @@ A professional, real-time church lyrics and multimedia presentation system built
 If this system helps your church or production team, you can support development:
 
 • PayPal: https://www.paypal.me/red1103
+### GCash
+Scan the QR code below:
+
+![GCash QR](assets/gcash-qr.png)
+
 
 Your support helps maintain and improve this free and open-source project.
 

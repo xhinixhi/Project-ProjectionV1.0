@@ -6,13 +6,34 @@ A professional, real-time church lyrics and multimedia presentation system built
 
 ## ✨ Features
 
--   **🎵 Song Library**: Advanced search by title, author, or lyrics. Easy "Add Song" workflow with custom section tags (V1, C1, B1, etc.).
+-   **🎵 Song Library**: Advanced search by title, author, or lyrics. Easy "Add Song" workflow with custom section tags
+       [I1.1] = Intro (.1 .2 .3 .4 are sections)
+       [V1.1] = Verse 1
+       [V2.1] = Verse 2
+       [C1.1] = Chorus 1
+       [PC1.1] = Pre Chorus
+       [B1.1] = Bridge
+       [R1.1] = Refrain
+       [T1.1] = Tag
+    you can map keyboard shortcut for each tag for fast song lyrics navigation (under setting > shortcuts)
+    example V1.1 mapped to letter "V"
+
+    support HTML tags (just enclose with ## <html> ##)
+
 -   **📋 Service Lineup**: Build and reorder your service lineup with drag-and-drop.
 -   **📺 Real-time Projection**: Push lyrics to OBS or any screen instantly using Socket.io—no refresh required.
+      output = "http://localhost:5002/output"
+    
 -   **🪄 Dynamic Styling**: Customize font, size, shadows, and **real-time text borders** for both normal and emphasized text.
 -   **📖 Bible Module**: Search and project Bible verses with support for parallel translations.
 -   **📢 Announcements & Birthdays**: Dedicated managers for automated announcements and birthday celebrant slides.
+      Annoucements support HTML code (example: you can project your html countdown timer)
+    
 -   **🎞️ Media Library**: Manage and project background videos, images, and even web URLs.
+       for youtube video use embed
+        example: https://www.youtube.com/embed/"videocode"?autoplay=1&mute=0&loop=1&playlist="videocode"&controls=0
+        replace "videocode" with youtube url identifier
+    
 -   **🖥️ OBS Optimized**: Native transparent output mode designed for OBS Browser Sources.
 
 ## 🚀 Getting Started

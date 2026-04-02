@@ -10,7 +10,7 @@ If this system helps your church or production team, you can support development
 ### GCash
 Scan the QR code below:
 
-![GCash QR](assets/gcash-qr.png)
+![GCash QR](assets/gcash-qr.jpg)
 
 
 Your support helps maintain and improve this free and open-source project.

@@ -27,7 +27,7 @@ A professional, real-time church lyrics and multimedia presentation system built
 1.  **Clone the repository**:
     ```bash
     git clone https://github.com/xhinixhi/Project-ProjectionV1.0.git
-    cd song-lyrics-projection
+    cd Project-ProjectionV1.0
     ```
 
 2.  **Create a virtual environment**:
